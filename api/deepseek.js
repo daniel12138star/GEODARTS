@@ -53,7 +53,12 @@ function normalizeReport(value) {
     destination: requiredString(value.destination, "destination", 120),
     destination_zh: typeof value.destination_zh === "string" ? value.destination_zh.trim().slice(0, 120) : "",
     destination_en: typeof value.destination_en === "string" ? value.destination_en.trim().slice(0, 120) : "",
-    nearestAirport: typeof value.nearestAirport === "string" && /^[A-Za-z]{3}$/.test(value.nearestAirport.trim()) ? value.nearestAirport.trim().toUpperCase() : "",
+    flightEstimate: {
+      airportCode: typeof value.flightEstimate?.airportCode === "string" && /^[A-Za-z]{3}$/.test(value.flightEstimate.airportCode.trim()) ? value.flightEstimate.airportCode.trim().toUpperCase() : "",
+      priceRange: typeof value.flightEstimate?.priceRange === "string" ? value.flightEstimate.priceRange.trim().slice(0, 100) : "",
+      airline: typeof value.flightEstimate?.airline === "string" ? value.flightEstimate.airline.trim().slice(0, 120) : "",
+      tip: typeof value.flightEstimate?.tip === "string" ? value.flightEstimate.tip.trim().slice(0, 180) : ""
+    },
     tags,
     preferenceMatch: {
       level,
@@ -118,8 +123,8 @@ module.exports = async function handler(req, res) {
 
     systemMessage = [
       "你是一位资深欧洲旅行专家,负责欧洲地区(包含申根区与英国)的目的地分析。只返回纯 JSON 对象,不要 Markdown 代码块、解释或前后缀。",
-      "JSON 必须包含 destination(string), destination_zh(string), destination_en(string), nearestAirport(string), tags(string array), preferenceMatch({level,reason}), alternativeSpots(array of {name,distance,reason}), budget({transport,hotel,food,totalRange}), seasonalBonus({season,bonus,reason}), totalScore(number), summary(string)。",
-      "nearestAirport 必须是目的地附近可乘坐商业航班机场的 3 位大写 IATA 代码,例如巴黎 CDG、罗马 FCO。不确定时返回空字符串,不要猜测或编造机场代码。",
+      "JSON 必须包含 destination(string), destination_zh(string), destination_en(string), flightEstimate({airportCode,priceRange,airline,tip}), tags(string array), preferenceMatch({level,reason}), alternativeSpots(array of {name,distance,reason}), budget({transport,hotel,food,totalRange}), seasonalBonus({season,bonus,reason}), totalScore(number), summary(string)。",
+      "请根据目的地和当前日期,扮演旅行专家,估算从英国伯明翰(BHX)到目的地最近机场的经济舱单程机票价格区间,单位为英镑 £。flightEstimate.airportCode 为该机场的 3 位大写 IATA 代码,例如巴黎 CDG、罗马 FCO。flightEstimate.priceRange 使用如 £35 - £65 的格式; airline 写可能运营该航线的航空公司; tip 写简短订票建议。以上均为经验预估,并非实时航班报价或实际可订航班,不要编造具体班次、起飞时间或预订链接。若无法合理估算航线或价格,flightEstimate 四个字段均返回空字符串。",
       "destination_zh 是地理位置的标准中文译名,destination_en 是当地或英文原名。必须结合地址确认地名含义; Nice 应译为 尼斯,Bath 应译为 巴斯,不要按普通词义翻译。如果确实没有可靠中文译名,允许 destination_zh 为空字符串。",
       "额外包含 recommendedPlay(string),以便展示主要推荐玩法。preferenceMatch.level 只能是 高、中、低。",
       "如果匹配度低,优先在飞镖落点附近 30-50 公里内寻找符合偏好的隐藏玩法,写入 alternativeSpots,并给出粗略距离; 如果附近确实没有,可以推荐落点本身的特色文化体验,并清楚说明距离为 0 公里。",
@@ -127,9 +132,9 @@ module.exports = async function handler(req, res) {
       "budget 的四个值必须都是字符串,以英镑 £ 为单位,按从英国出发的 3-7 天行程粗估。transport 包含往返和当地交通,hotel 为住宿,food 为餐饮,totalRange 为大致总花费区间。不要声称价格为实时报价。",
       isUK ? "目的地位于英国本土,交通按英国国内火车、大巴或自驾及当地交通估算,不要加入国际航班或虚高的跨国机票费用。" : "目的地位于英国之外,交通应考虑从英国往返的合理交通方式与当地交通。",
       "seasonalBonus 描述所给月份对应的季节及适宜度加成。totalScore 为 1 到 10 的数字,保留一位小数。summary 为一句 30 字以内的浪漫中文评语。",
-      "JSON 示例: {\"destination\":\"尼斯\",\"destination_zh\":\"尼斯\",\"destination_en\":\"Nice\",\"nearestAirport\":\"NCE\",\"tags\":[\"自然秘境\",\"小众静谧\"],\"preferenceMatch\":{\"level\":\"高\",\"reason\":\"很契合\"},\"alternativeSpots\":[],\"recommendedPlay\":\"慢慢散步\",\"budget\":{\"transport\":\"£100-200\",\"hotel\":\"£200-400\",\"food\":\"£80-150\",\"totalRange\":\"£380-750\"},\"seasonalBonus\":{\"season\":\"秋季\",\"bonus\":\"适合\",\"reason\":\"气温温和\"},\"totalScore\":8.5,\"summary\":\"让风替你写下下一站的情书\"}"
+      "JSON 示例: {\"destination\":\"尼斯\",\"destination_zh\":\"尼斯\",\"destination_en\":\"Nice\",\"flightEstimate\":{\"airportCode\":\"NCE\",\"priceRange\":\"£55 - £120\",\"airline\":\"可能的承运航司\",\"tip\":\"建议提前比较不同日期的票价\"},\"tags\":[\"自然秘境\",\"小众静谧\"],\"preferenceMatch\":{\"level\":\"高\",\"reason\":\"很契合\"},\"alternativeSpots\":[],\"recommendedPlay\":\"慢慢散步\",\"budget\":{\"transport\":\"£100-200\",\"hotel\":\"£200-400\",\"food\":\"£80-150\",\"totalRange\":\"£380-750\"},\"seasonalBonus\":{\"season\":\"秋季\",\"bonus\":\"适合\",\"reason\":\"气温温和\"},\"totalScore\":8.5,\"summary\":\"让风替你写下下一站的情书\"}"
     ].join("\n");
-    userMessage = `当地地名: ${location}${locationZh ? `\nNominatim 中文候选名: ${locationZh}` : ""}${address ? `\n当地语言地址: ${address}` : ""}${countryCode ? `\n国家代码: ${countryCode}` : ""}\n旅行偏好: ${preference}\n当前月份: ${currentMonth} 月。请按规定 JSON 字段给出分析。`;
+    userMessage = `当地地名: ${location}${locationZh ? `\nNominatim 中文候选名: ${locationZh}` : ""}${address ? `\n当地语言地址: ${address}` : ""}${countryCode ? `\n国家代码: ${countryCode}` : ""}\n旅行偏好: ${preference}\n当前月份: ${currentMonth} 月\n当前日期(英国时间): ${todayInUK()}。请按规定 JSON 字段给出分析。`;
     if (itinerary) {
       systemMessage = [
         "你是一位欧洲地区(包含申根区与英国)的定制旅行规划师。根据目的地、用户偏好和当前月份,用简体中文规划从英国出发的 3 天行程。",
@@ -195,15 +200,7 @@ module.exports = async function handler(req, res) {
     }
     try {
       const report = normalizeReport(parsed);
-      let flightInfo = { available: false };
-      if (report.nearestAirport) {
-        try {
-          flightInfo = await require("./mcp").searchFlights({ origin: "BHX", destination: report.nearestAirport, date: todayInUK() });
-        } catch (error) {
-          console.error("Flight search failed:", error);
-        }
-      }
-      return res.status(200).json({ report, flightInfo });
+      return res.status(200).json({ report });
     } catch (error) {
       console.error("DeepSeek returned an invalid report:", error);
       return res.status(502).json({ error: "DeepSeek returned an invalid travel report." });

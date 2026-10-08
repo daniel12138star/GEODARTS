@@ -47,7 +47,7 @@
 .passport-summary{margin:7px 0 18px;color:#a97888;font-size:13px}.stamp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:14px}.stamp{position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;width:105px;height:105px;margin:auto;border:3px double #ee95b6;border-radius:50%;background:#fff0f5;color:#8b4864;text-align:center;box-shadow:0 5px 12px #a75d7b22;transform:rotate(-5deg)}.stamp:nth-child(even){transform:rotate(5deg)}.stamp.locked{border:2px dashed #cbbbc3;background:#f7f3f4;color:#9e969b;box-shadow:none}.stamp-emoji{font-size:28px;line-height:1}.stamp-name{margin-top:2px;font-size:11px;font-weight:800;line-height:1.15}.stamp-en{font-size:9px;line-height:1.1}.stamp-count{position:absolute;right:-4px;top:0;padding:2px 6px;border-radius:999px;background:#f59dbb;color:#fff;font-size:11px;font-weight:800}.passport-clear{display:block;margin:22px auto 0;padding:5px 9px;border:0;background:none;color:#a97888;font-size:11px;text-decoration:underline;cursor:pointer}
 .itinerary-button{width:100%;min-height:45px;margin-top:11px;border:0;border-radius:16px;background:linear-gradient(135deg,#c9e8fb,#ffcade);box-shadow:0 5px 0 #b9a8c0;color:#713d54;font:800 14px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;cursor:pointer}.itinerary-button:disabled{opacity:.67;cursor:wait}.itinerary-panel[hidden]{display:none}.itinerary-panel{margin-top:15px;padding:15px;border:1px solid #e9d6e5;border-radius:17px;background:#fff3f8;color:#69465a;box-shadow:0 5px 18px #9d59751d;opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease}.itinerary-panel.visible{opacity:1;transform:translateY(0)}.itinerary-panel h3{margin:0 0 9px;color:#9b536e;font-size:16px}.itinerary-content{margin:0;white-space:pre-line;line-height:1.75;font-size:13px}
 .destination-row{display:flex;align-items:center;flex-wrap:wrap;gap:7px 10px}.destination-row .destination{margin-bottom:0}.weather-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border:1px solid #d7e9f6;border-radius:999px;background:#eef8ff;color:#6a6b81;font-size:12px;font-weight:800;white-space:nowrap;box-shadow:0 3px 9px #9abacf33}.weather-badge[hidden]{display:none}
-.flight-info{margin-top:12px;padding:12px;border:1px solid #dbeaf5;border-radius:15px;background:#f5fbff}.flight-info-title{margin:0 0 5px;color:#8d4967;font-size:13px;font-weight:800}.flight-info-subtitle{margin:0 0 7px;color:#745d72;font-size:12px;font-weight:750}.flight-status{margin:0;color:#69465a;font-size:12px;line-height:1.6}.flight-booking{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:999px;background:#ffcadb;color:#713d54;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 3px 8px #9d59752b}.flight-booking[hidden]{display:none}.flight-note{display:block;margin-top:6px;color:#a97888;font-size:10px}
+.flight-info{margin-top:12px;padding:12px;border:1px solid #dbeaf5;border-radius:15px;background:#f5fbff}.flight-info-title{margin:0 0 7px;color:#8d4967;font-size:13px;font-weight:800}.flight-status{margin:0;color:#69465a;font-size:12px;line-height:1.6}.flight-note{display:block;margin-top:6px;color:#a97888;font-size:10px}
 #weather-layer{position:fixed;inset:0;width:100%;height:100%;z-index:9999;pointer-events:none;overflow:hidden;contain:layout paint}.weather-drop,.weather-flake{position:absolute;top:-12vh;left:var(--x);will-change:transform;pointer-events:none}.weather-drop{width:2px;height:17px;border-radius:100% 100% 60% 60%;background:#A2D2FF;box-shadow:0 0 6px #A2D2FF;opacity:.76;animation:weather-rain var(--duration) linear infinite;animation-delay:var(--delay)}.weather-flake{color:#FFFDD0;font-size:var(--size);text-shadow:0 0 5px #fff,0 0 10px #fffdd0;opacity:.9;animation:weather-snow var(--duration) linear infinite;animation-delay:var(--delay)}.weather-glow{position:absolute;right:-10vw;top:-18vh;width:min(58vw,660px);height:min(58vw,660px);border-radius:50%;background:radial-gradient(circle,#fffdd0aa 0%,#ffd9ad66 34%,#ffb6c122 61%,transparent 72%);filter:blur(10px);transform-origin:75% 25%;animation:weather-sun 5s ease-in-out infinite alternate}
 @keyframes weather-rain{from{transform:translate3d(0,-4vh,0)}to{transform:translate3d(-30px,116vh,0)}}@keyframes weather-snow{0%{transform:translate3d(0,-4vh,0) rotate(0deg)}50%{transform:translate3d(var(--sway),54vh,0) rotate(90deg)}100%{transform:translate3d(0,116vh,0) rotate(180deg)}}@keyframes weather-sun{from{opacity:.5;transform:scale(.94)}to{opacity:.84;transform:scale(1.08)}}@media(prefers-reduced-motion:reduce){.weather-drop,.weather-flake,.weather-glow{animation:none}.weather-drop,.weather-flake{display:none}}
 .landed-dart{position:absolute;z-index:9;width:40px;height:40px;transform:translate(-50%,-50%);pointer-events:none;will-change:left,top}
@@ -178,7 +178,7 @@
  });
  const button=document.getElementById("throw-button"),card=document.getElementById("result-card"),status=document.getElementById("status"),preferenceBar=document.getElementById("preference-bar");
  card.insertAdjacentHTML("beforeend",'<button id="itinerary-button" class="itinerary-button" type="button" disabled>🗺️ 帮我规划 3 天行程</button><section id="itinerary-panel" class="itinerary-panel" hidden><h3>专属 3 天行程</h3><p id="itinerary-content" class="itinerary-content"></p></section>');
- card.querySelector(".bill-note").insertAdjacentHTML("afterend",'<div class="flight-info"><p class="flight-info-title">💰 实时价格</p><p class="flight-info-subtitle">✈️ 当天航班(伯明翰出发)</p><p id="flight-status" class="flight-status">正在等待 AI 识别机场...</p><a id="flight-booking" class="flight-booking" target="_blank" rel="noopener noreferrer" hidden>去预订</a><small class="flight-note">价格和余票以预订页面为准</small></div>');
+ card.querySelector(".bill-note").insertAdjacentHTML("afterend",'<div class="flight-info"><p class="flight-info-title">✈️ 航班价格预估(伯明翰出发)</p><p id="flight-status" class="flight-status">AI 正在估算航班价格...</p><small class="flight-note">AI 经验估算,并非实时票价或可订航班</small></div>');
  const destinationRow=document.createElement("div"),destinationHeading=card.querySelector("#destination");
  let weatherBadge=document.createElement("span");
  destinationRow.className="destination-row";weatherBadge.id="weather-badge";weatherBadge.className="weather-badge";weatherBadge.hidden=true;
@@ -519,7 +519,7 @@
    destination:required(value.destination),
    destination_zh:typeof value.destination_zh==="string"?value.destination_zh.trim():"",
    destination_en:typeof value.destination_en==="string"?value.destination_en.trim():"",
-   nearestAirport:typeof value.nearestAirport==="string"?value.nearestAirport.trim().toUpperCase():"",
+   flightEstimate:value.flightEstimate&&typeof value.flightEstimate==="object"&&!Array.isArray(value.flightEstimate)?value.flightEstimate:{},
    tags,
    preferenceMatch:{level:match.level,reason:required(match.reason)},
    alternativeSpots:alternatives,
@@ -548,26 +548,20 @@
   tripReport.hidden=false;
   aiAnalysis.hidden=true
  }
- function renderFlightInfo(info,report,landing){
+ function renderFlightEstimate(report,landing){
   const status=card.querySelector("#flight-status");
-  const booking=card.querySelector("#flight-booking");
-  booking.hidden=true;
-  booking.removeAttribute("href");
-  if(!/^[A-Z]{3}$/.test(report.nearestAirport)||!info?.available||info.origin!=="BHX"||info.destination!==report.nearestAirport||typeof info.price!=="string"){
-   status.textContent="暂时无法获取航班价格";
+  const estimate=report.flightEstimate;
+  const airport=typeof estimate.airportCode==="string"?estimate.airportCode.trim().toUpperCase():"";
+  const price=typeof estimate.priceRange==="string"?estimate.priceRange.trim():"";
+  if(!/^[A-Z]{3}$/.test(airport)||!/^£\s*\d/.test(price)){
+   status.textContent="暂无该航线的价格估算";
    return
   }
   const place=report.destination_zh||landing.zhName||report.destination;
-  const time=/^\d{1,2}:\d{2}$/.test(info.departureTime||"")?" 今天 "+info.departureTime+" 出发":" 今天出发";
-  status.textContent="伯明翰 (BHX) → "+place+" ("+info.destination+")"+time+",价格 "+info.price+" 起";
-  if(typeof info.bookingUrl==="string"){
-   try{
-    const url=new URL(info.bookingUrl);
-    if(url.protocol==="https:"&&["google.com","www.google.com"].includes(url.hostname)&&url.pathname.startsWith("/travel/flights")){
-     booking.href=url.href;booking.hidden=false
-    }
-   }catch(error){console.log("航班预订链接无效",error)}
-  }
+  const airline=typeof estimate.airline==="string"&&estimate.airline.trim()?"\n参考航司: "+estimate.airline.trim():"";
+  const tip=typeof estimate.tip==="string"&&estimate.tip.trim()?"\n💡 "+estimate.tip.trim():"";
+  status.textContent="伯明翰 (BHX) → "+place+" ("+airport+")\n经济舱预估: "+price+airline+tip;
+  status.style.whiteSpace="pre-line"
  }
  function currentMonthInUK(){
   return Number(new Intl.DateTimeFormat("en-GB",{month:"numeric",timeZone:"Europe/London"}).format(new Date()))
@@ -631,7 +625,7 @@
    if(!response.ok)throw new Error(data.error||"HTTP "+response.status);
    const report=parseTravelReport(data.report);
    renderTripReport(report);
-   renderFlightInfo(data.flightInfo,report,landing);
+   renderFlightEstimate(report,landing);
    destination.textContent=bilingualName(report.destination_zh||landing.zhName,landing.originalName||report.destination_en);
    if(!landing.aiPhotoChecked){
     landing.aiPhotoChecked=true;

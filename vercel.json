@@ -3,10 +3,6 @@
   "functions": {
     "api/deepseek.js": {
       "maxDuration": 60
-    },
-    "api/mcp.js": {
-      "maxDuration": 60,
-      "includeFiles": "node_modules/google-flights-mcp/**"
     }
   }
 }
