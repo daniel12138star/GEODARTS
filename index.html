@@ -548,20 +548,9 @@
   tripReport.hidden=false;
   aiAnalysis.hidden=true
  }
- function renderFlightEstimate(report,landing){
+ function renderFlightEstimate(report){
   const status=card.querySelector("#flight-status");
-  const estimate=report.flightEstimate;
-  const airport=typeof estimate.airportCode==="string"?estimate.airportCode.trim().toUpperCase():"";
-  const price=typeof estimate.priceRange==="string"?estimate.priceRange.trim():"";
-  if(!/^[A-Z]{3}$/.test(airport)||!/^£\s*\d/.test(price)){
-   status.textContent="暂无该航线的价格估算";
-   return
-  }
-  const place=report.destination_zh||landing.zhName||report.destination;
-  const airline=typeof estimate.airline==="string"&&estimate.airline.trim()?"\n参考航司: "+estimate.airline.trim():"";
-  const tip=typeof estimate.tip==="string"&&estimate.tip.trim()?"\n💡 "+estimate.tip.trim():"";
-  status.textContent="伯明翰 (BHX) → "+place+" ("+airport+")\n经济舱预估: "+price+airline+tip;
-  status.style.whiteSpace="pre-line"
+  status.textContent="经济舱预估: "+report.flightEstimate.priceRange
  }
  function currentMonthInUK(){
   return Number(new Intl.DateTimeFormat("en-GB",{month:"numeric",timeZone:"Europe/London"}).format(new Date()))
@@ -625,7 +614,7 @@
    if(!response.ok)throw new Error(data.error||"HTTP "+response.status);
    const report=parseTravelReport(data.report);
    renderTripReport(report);
-   renderFlightEstimate(report,landing);
+   renderFlightEstimate(report);
    destination.textContent=bilingualName(report.destination_zh||landing.zhName,landing.originalName||report.destination_en);
    if(!landing.aiPhotoChecked){
     landing.aiPhotoChecked=true;
