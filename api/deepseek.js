@@ -107,10 +107,10 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "Server is missing DEEPSEEK_API_KEY." });
-
   const body = req.body && typeof req.body === "object" ? req.body : {};
+  const generateChallenge = body.requestType === "generate_challenge";
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: generateChallenge ? "生成失败" : "Server is missing DEEPSEEK_API_KEY." });
   const itinerary = body.requestType === "itinerary";
   const structured = body.mode === "travel_report" || typeof body.location === "string";
   const challenge = typeof body.challenge === "string" ? body.challenge.trim() : "";
@@ -118,7 +118,10 @@ module.exports = async function handler(req, res) {
   let userMessage;
   let systemMessage;
 
-  if (structured) {
+  if (generateChallenge) {
+    systemMessage = "你是一位风趣幽默的旅行游戏主持人。请用中文为今天的旅行盲盒现场随机生成一个简短、有趣、略带挑战性但绝对可行的旅行任务。要求：字数严格控制在 15 个字以内；只返回任务内容的纯文本；不要用引号；不要加任何解释；不要返回 JSON 格式！例如：只能靠徒步和公交、穿搭必须全粉色、去当地菜市场砍价。";
+    userMessage = `今天是 ${todayInUK()}。请现场生成一条新的旅行挑战。`;
+  } else if (structured) {
     const location = typeof body.location === "string" ? body.location.trim() : "";
     const address = typeof body.address === "string" ? body.address.trim().slice(0, 500) : "";
     const locationZh = typeof body.locationZh === "string" ? body.locationZh.trim().slice(0, 120) : "";
@@ -190,22 +193,33 @@ module.exports = async function handler(req, res) {
         ],
         stream: false,
         ...(structured && !itinerary ? { response_format: { type: "json_object" }, max_tokens: 1800 } : {}),
-        ...(itinerary ? { max_tokens: 1100 } : {})
+        ...(itinerary ? { max_tokens: 1100 } : {}),
+        ...(generateChallenge ? { max_tokens: 80, temperature: 1.1 } : {})
       }),
       signal: controller.signal
     });
 
     const payload = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
+      if (generateChallenge) return res.status(502).json({ error: "生成失败" });
       const detail = payload.error?.message || payload.message || `DeepSeek returned HTTP ${upstream.status}`;
       return res.status(upstream.status >= 400 && upstream.status < 600 ? upstream.status : 502).json({ error: detail });
     }
     if (payload.choices?.[0]?.finish_reason === "length") {
+      if (generateChallenge) return res.status(502).json({ error: "生成失败" });
       return res.status(502).json({ error: "DeepSeek response was truncated. Please retry." });
     }
     const content = payload.choices?.[0]?.message?.content;
     if (typeof content !== "string" || !content.trim()) {
+      if (generateChallenge) return res.status(502).json({ error: "生成失败" });
       return res.status(502).json({ error: "DeepSeek returned an empty response." });
+    }
+    if (generateChallenge) {
+      const generated = content.trim();
+      if (Array.from(generated).length > 15 || /[\r\n\u0000-\u001f\u007f]/.test(generated) || /^["'“”{\[]/.test(generated)) {
+        return res.status(502).json({ error: "生成失败" });
+      }
+      return res.status(200).json({ challenge: generated });
     }
     if (itinerary) return res.status(200).json({ itinerary: content.trim() });
     if (!structured) return res.status(200).json({ analysis: content.trim() });
@@ -225,6 +239,10 @@ module.exports = async function handler(req, res) {
       return res.status(502).json({ error: "DeepSeek returned an invalid travel report." });
     }
   } catch (error) {
+    if (generateChallenge) {
+      console.error("Challenge generation failed:", error);
+      return res.status(error.name === "AbortError" ? 504 : 502).json({ error: "生成失败" });
+    }
     if (error.name === "AbortError") return res.status(504).json({ error: "DeepSeek request timed out." });
     console.error("DeepSeek API request failed:", error);
     return res.status(502).json({ error: "Could not reach the DeepSeek API." });

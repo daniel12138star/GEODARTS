@@ -189,9 +189,8 @@
  destinationHeading.before(destinationRow);destinationRow.append(destinationHeading,weatherBadge);
  const cardTemplate=card.innerHTML,stage=document.getElementById("fps-stage"),stageTemplate=stage.innerHTML;
  let destination=document.getElementById("destination"),addressEl=document.getElementById("address"),coordinatesEl=document.getElementById("coordinates"),aiAnalysis=document.getElementById("ai-analysis"),tripReport=document.getElementById("trip-report"),rethinkButton=document.getElementById("rethink-button");
- const challengePool=["只带 £200 穷游","只能坐火车","只背一个双肩包","不能带手机","必须体验当地夜生活"];
  const challengeButton=document.getElementById("challenge-button"),challengeLabel=document.getElementById("challenge-label");
- let currentPreference="all",currentChallenge="",currentLanding=null,analysisController=null,analysisRequestId=0;
+ let currentPreference="all",currentChallenge="",currentLanding=null,analysisController=null,analysisRequestId=0,isGeneratingChallenge=false;
  const weatherLayer=document.getElementById("weather-layer");
  let weatherController=null;
  let itineraryButton=document.getElementById("itinerary-button"),itineraryPanel=document.getElementById("itinerary-panel"),itineraryContent=document.getElementById("itinerary-content"),itineraryController=null,itineraryRequestId=0;
@@ -785,6 +784,7 @@
   round++;
   currentChallenge="";
   challengeLabel.textContent="无挑战,自由飞";
+  challengeButton.textContent="🎲 抽取今日挑战";
   clearWeather();
   resetItinerary();
   if(nominatimController)nominatimController.abort();
@@ -813,7 +813,7 @@
   await pause(500)
  }
  async function handleButtonClick(){
-  if(isAnimating)return;
+  if(isAnimating||isGeneratingChallenge)return;
   isAnimating=true;
   button.disabled=true;
   challengeButton.disabled=true;
@@ -830,10 +830,36 @@
    button.querySelector("span:last-child").textContent=readyToReset?"再扔一次":"扔飞镖"
   }
  }
- challengeButton.addEventListener("click",()=>{
-  if(isAnimating||readyToReset)return;
-  currentChallenge=challengePool[Math.floor(Math.random()*challengePool.length)];
-  challengeLabel.textContent="今日挑战: "+currentChallenge
+ challengeButton.addEventListener("click",async()=>{
+  if(isAnimating||readyToReset||isGeneratingChallenge)return;
+  isGeneratingChallenge=true;
+  challengeButton.disabled=true;
+  button.disabled=true;
+  challengeButton.textContent="🧠 AI 正在构思挑战...";
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),20000);
+  try{
+   const response=await fetch("/api/deepseek",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({requestType:"generate_challenge"}),
+    signal:controller.signal
+   });
+   const data=await response.json();
+   if(!response.ok||typeof data.challenge!=="string"||!data.challenge.trim())throw new Error(data.error||"生成失败");
+   currentChallenge=data.challenge.trim();
+   challengeLabel.textContent="今日挑战: "+currentChallenge;
+   challengeButton.textContent="🎲 换一个挑战"
+  }catch(error){
+   console.log("AI 挑战生成失败",error);
+   setStatus("AI 开小差了，请再点一次",true,4000);
+   challengeButton.textContent=currentChallenge?"🎲 换一个挑战":"🎲 抽取今日挑战"
+  }finally{
+   clearTimeout(timeout);
+   isGeneratingChallenge=false;
+   challengeButton.disabled=readyToReset||isAnimating;
+   button.disabled=isAnimating
+  }
  });
  let bordersPromise=null;function waitForBorders(){if(!bordersPromise)bordersPromise=loadBorders().catch(error=>{console.error(error);bordersReady=false;bordersPromise=null;clearStatus();return false});return bordersPromise}
  button.addEventListener("click",handleButtonClick);
