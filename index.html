@@ -19,7 +19,7 @@
 .preference-button{flex:none;padding:9px 12px;border:1px solid #ffdce8;border-radius:999px;background:#fffaf5ed;box-shadow:0 5px 14px #9d59752b;color:#9b536e;font:700 13px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;white-space:nowrap;cursor:pointer;transition:transform .18s,background .18s,box-shadow .18s}
 .preference-button:hover{transform:translateY(-2px)}
 .preference-button[aria-pressed="true"]{border-color:#f18baa;background:#ffcadb;box-shadow:0 4px 0 #d989a4,0 7px 16px #9d597533;color:#713d54}
-.challenge-control{position:absolute;z-index:101;left:50%;bottom:calc(188px + env(safe-area-inset-bottom));transform:translateX(-50%);display:grid;justify-items:center;gap:5px;width:max-content;max-width:calc(100% - 20px)}.challenge-button{padding:8px 15px;border:1px solid #ffdce8;border-radius:999px;background:#fffaf5ed;box-shadow:0 5px 14px #9d59752b;color:#9b536e;font:750 13px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;cursor:pointer}.challenge-button:disabled{opacity:.65;cursor:default}.challenge-label{max-width:100%;padding:4px 10px;border-radius:999px;background:#ffe8f0ed;color:#874c68;font-size:11px;font-weight:750;text-align:center;box-shadow:0 3px 9px #9d597522}.challenge-feedback[hidden]{display:none}.challenge-feedback{margin:12px 0;padding:12px;border:1px solid #f1d7e2;border-radius:16px;background:#fff3f7;color:#69465a;font-size:13px;line-height:1.6}.challenge-feedback strong{display:block;margin-bottom:4px;color:#a24b72}
+.challenge-control{position:absolute;z-index:101;left:50%;bottom:calc(188px + env(safe-area-inset-bottom));transform:translateX(-50%);display:grid;justify-items:center;gap:5px;width:max-content;max-width:calc(100% - 20px)}.challenge-button{padding:8px 15px;border:1px solid #ffdce8;border-radius:999px;background:#fffaf5ed;box-shadow:0 5px 14px #9d59752b;color:#9b536e;font:750 13px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;cursor:pointer}.challenge-button:disabled{opacity:.65;cursor:default}.challenge-label{max-width:100%;padding:4px 10px;border-radius:999px;background:#ffe8f0ed;color:#874c68;font-size:11px;font-weight:750;text-align:center;box-shadow:0 3px 9px #9d597522}.challenge-feedback[hidden]{display:none}.challenge-feedback{margin:12px 0;padding:12px;border:1px solid #f1d7e2;border-radius:16px;background:#fff3f7;color:#69465a;font-size:13px;line-height:1.6}.challenge-feedback strong{display:block;margin-bottom:4px;color:#a24b72}.challenge-feedback #challenge-status{display:block;font-weight:750}
 .result-card{bottom:calc(182px + env(safe-area-inset-bottom));max-height:min(62vh,740px)}
 .trip-report[hidden],.ai-analysis[hidden],.hidden-play[hidden]{display:none}
 .trip-report{display:grid;gap:11px;margin-top:12px}
@@ -182,7 +182,7 @@
  const button=document.getElementById("throw-button"),card=document.getElementById("result-card"),status=document.getElementById("status"),preferenceBar=document.getElementById("preference-bar");
  card.insertAdjacentHTML("beforeend",'<button id="itinerary-button" class="itinerary-button" type="button" disabled>🗺️ 帮我规划 3 天行程</button><section id="itinerary-panel" class="itinerary-panel" hidden><h3>专属 3 天行程</h3><p id="itinerary-content" class="itinerary-content"></p></section>');
  card.querySelector(".bill-note").insertAdjacentHTML("afterend",'<div class="flight-info"><p class="flight-info-title">✈️ 航班价格预估(伯明翰出发)</p><p id="flight-status" class="flight-status">AI 正在估算航班价格...</p><small class="flight-note">AI 经验估算,并非实时票价或可订航班</small></div>');
- card.querySelector("#trip-report").insertAdjacentHTML("beforeend",'<div id="challenge-feedback" class="challenge-feedback" hidden><strong id="challenge-status"></strong><span id="challenge-comment"></span></div>');
+ card.querySelector("#trip-report").insertAdjacentHTML("beforeend",'<div id="challenge-feedback" class="challenge-feedback" hidden><strong>🎯 挑战评估</strong><span id="challenge-status"></span><span id="challenge-comment"></span></div>');
  const destinationRow=document.createElement("div"),destinationHeading=card.querySelector("#destination");
  let weatherBadge=document.createElement("span");
  destinationRow.className="destination-row";weatherBadge.id="weather-badge";weatherBadge.className="weather-badge";weatherBadge.hidden=true;
@@ -526,7 +526,7 @@
    destination_zh:typeof value.destination_zh==="string"?value.destination_zh.trim():"",
    destination_en:typeof value.destination_en==="string"?value.destination_en.trim():"",
    flightEstimate:value.flightEstimate&&typeof value.flightEstimate==="object"&&!Array.isArray(value.flightEstimate)?value.flightEstimate:{},
-   challengeFeedback:value.challengeFeedback&&typeof value.challengeFeedback==="object"&&!Array.isArray(value.challengeFeedback)&&["轻松完成","略有难度","极其困难"].includes(value.challengeFeedback.status)&&typeof value.challengeFeedback.comment==="string"?value.challengeFeedback:null,
+   challengeFeedback:value.challengeFeedback&&typeof value.challengeFeedback==="object"&&!Array.isArray(value.challengeFeedback)&&["轻松完成","略有难度","极其困难","几乎不可能"].includes(value.challengeFeedback.status)&&typeof value.challengeFeedback.comment==="string"?value.challengeFeedback:null,
    tags,
    preferenceMatch:{level:match.level,reason:required(match.reason)},
    alternativeSpots:alternatives,
@@ -555,7 +555,7 @@
   const challengeBox=card.querySelector("#challenge-feedback");
   challengeBox.hidden=!currentLanding?.challenge||!report.challengeFeedback;
   if(!challengeBox.hidden){
-   card.querySelector("#challenge-status").textContent="🎯 挑战完成度: "+report.challengeFeedback.status;
+   card.querySelector("#challenge-status").textContent="挑战完成度: "+report.challengeFeedback.status;
    card.querySelector("#challenge-comment").textContent=report.challengeFeedback.comment
   }
   tripReport.hidden=false;
@@ -618,7 +618,7 @@
    const response=await fetch("/api/deepseek",{
     method:"POST",
     headers:{"Content-Type":"application/json","Accept":"application/json"},
-    body:JSON.stringify({location:landing.originalName||landing.zhName||"未知地点",locationZh:landing.zhName,address:landing.address,countryCode:landing.countryCode,preference:preferenceName(preference),currentMonth:currentMonthInUK(),challenge:landing.challenge}),
+    body:JSON.stringify({location:landing.originalName||landing.zhName||"未知地点",locationZh:landing.zhName,address:landing.address,countryCode:landing.countryCode,preference:preferenceName(preference),currentMonth:currentMonthInUK(),challenge:currentChallenge}),
     signal:controller.signal
    });
    let data;

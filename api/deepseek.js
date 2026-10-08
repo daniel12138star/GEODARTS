@@ -2,7 +2,6 @@
 // Configure DEEPSEEK_API_KEY in Vercel Project Settings -> Environment Variables.
 
 const PREFERENCES = new Set(["人文历史", "自然秘境", "全都要"]);
-const CHALLENGES = new Set(["只带 £200 穷游", "只能坐火车", "只背一个双肩包", "不能带手机", "必须体验当地夜生活"]);
 
 function normalizeReport(value, challenge) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -56,7 +55,7 @@ function normalizeReport(value, challenge) {
   let challengeFeedback = null;
   if (challenge) {
     const feedback = value.challengeFeedback;
-    if (!feedback || typeof feedback !== "object" || Array.isArray(feedback) || !["轻松完成", "略有难度", "极其困难"].includes(feedback.status)) {
+    if (!feedback || typeof feedback !== "object" || Array.isArray(feedback) || !["轻松完成", "略有难度", "极其困难", "几乎不可能"].includes(feedback.status)) {
       throw new Error("Invalid challengeFeedback.");
     }
     challengeFeedback = { status: feedback.status, comment: requiredString(feedback.comment, "challengeFeedback.comment", 180) };
@@ -115,7 +114,7 @@ module.exports = async function handler(req, res) {
   const itinerary = body.requestType === "itinerary";
   const structured = body.mode === "travel_report" || typeof body.location === "string";
   const challenge = typeof body.challenge === "string" ? body.challenge.trim() : "";
-  if (challenge && !CHALLENGES.has(challenge)) return res.status(400).json({ error: "Invalid challenge." });
+  if (challenge.length > 120 || /[\u0000-\u001f\u007f]/.test(challenge)) return res.status(400).json({ error: "Invalid challenge." });
   let userMessage;
   let systemMessage;
 
@@ -148,9 +147,12 @@ module.exports = async function handler(req, res) {
       "budget 的四个值必须都是字符串,以英镑 £ 为单位,按从英国出发的 3-7 天行程粗估。transport 包含往返和当地交通,hotel 为住宿,food 为餐饮,totalRange 为大致总花费区间。不要声称价格为实时报价。",
       isUK ? "目的地位于英国本土,交通按英国国内火车、大巴或自驾及当地交通估算,不要加入国际航班或虚高的跨国机票费用。" : "目的地位于英国之外,交通应考虑从英国往返的合理交通方式与当地交通。",
       "seasonalBonus 描述所给月份对应的季节及适宜度加成。totalScore 为 1 到 10 的数字,保留一位小数。summary 为一句 30 字以内的浪漫中文评语。",
-      challenge ? `用户抽到的旅行挑战是: ${challenge}。请根据这个挑战评估目的地是否合适。challengeFeedback 必须是对象,包含 status 和 comment; status 只能是 轻松完成、略有难度、极其困难; comment 是一句机智幽默、贴合地点的点评。` : "用户没有抽取旅行挑战。challengeFeedback 必须返回 null。",
+      challenge ? `用户当前抽到的旅行挑战是: ${JSON.stringify(challenge)}。请根据目的地的实际情况(物价、交通、治安、语言等)严肃评估该挑战在这里的难度。challengeFeedback 必须是对象,包含 status 和 comment。status 必须严格是 轻松完成、略有难度、极其困难、几乎不可能 之一。comment 必须是一句机智幽默、结合当地特色的点评。举例: 巴黎遇上 只带 £200 穷游,可以点评预算会迫使游客住市郊、靠面包省钱;挪威遇上 只能徒步和公交,可以点评峡湾徒步考验双腿、公共交通考验钱包。不得让挑战评价覆盖或删去原有的 flightEstimate、totalScore、summary 等字段。` : "用户没有抽取旅行挑战。challengeFeedback 必须返回 null。",
       "JSON 示例: {\"destination\":\"尼斯\",\"destination_zh\":\"尼斯\",\"destination_en\":\"Nice\",\"flightEstimate\":{\"airportCode\":\"NCE\",\"priceRange\":\"£55 - £120\",\"airline\":\"可能的承运航司\",\"tip\":\"建议提前比较不同日期的票价\"},\"tags\":[\"自然秘境\",\"小众静谧\"],\"preferenceMatch\":{\"level\":\"高\",\"reason\":\"很契合\"},\"alternativeSpots\":[],\"recommendedPlay\":\"慢慢散步\",\"budget\":{\"transport\":\"£100-200\",\"hotel\":\"£200-400\",\"food\":\"£80-150\",\"totalRange\":\"£380-750\"},\"seasonalBonus\":{\"season\":\"秋季\",\"bonus\":\"适合\",\"reason\":\"气温温和\"},\"totalScore\":8.5,\"summary\":\"让风替你写下下一站的情书\",\"challengeFeedback\":null}"
     ].join("\n");
+    if (challenge) {
+      systemMessage = systemMessage.replace('"challengeFeedback":null}', '"challengeFeedback":{"status":"略有难度","comment":"这个挑战值得试试,但请留点余力给惊喜"}}');
+    }
     userMessage = `当地地名: ${location}${locationZh ? `\nNominatim 中文候选名: ${locationZh}` : ""}${address ? `\n当地语言地址: ${address}` : ""}${countryCode ? `\n国家代码: ${countryCode}` : ""}\n旅行偏好: ${preference}\n旅行挑战: ${challenge || "无挑战"}\n当前月份: ${currentMonth} 月\n当前日期(英国时间): ${todayInUK()}。请按规定 JSON 字段给出分析。`;
     if (itinerary) {
       systemMessage = [
