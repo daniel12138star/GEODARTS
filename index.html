@@ -1,20 +1,85 @@
 <!doctype html>
-<!-- 建议通过本地服务器或在线部署访问，以确保浏览器允许跨域 API 请求。 -->
+<!-- 建议通过本地服务器或在线部署访问,以确保浏览器允许跨域 API 请求. -->
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f8dfe9">
 <title>椰椰和小鱼的旅行飞镖</title>
 <link href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" rel="stylesheet"><script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script><script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
 <style>
-:root{font-family:"ZCOOL KuaiLe","Microsoft YaHei","PingFang SC",sans-serif;color:#684957;background:#fff7f4;font-synthesis:none}*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}#map{position:absolute;inset:0;background:#a2d2ff}.topbar{position:absolute;z-index:3;top:18px;left:18px;display:flex;align-items:center;gap:12px;max-width:calc(100% - 36px);padding:11px 17px 11px 12px;border:1px solid #ffe0e9;border-radius:22px;background:#fffaf5ed;box-shadow:0 8px 28px #ad708034;backdrop-filter:blur(12px);pointer-events:none}.logo{display:grid;flex:none;width:42px;height:42px;place-items:center;border-radius:16px;background:#ffe1e8;font-size:23px}.brand{color:#9b536e;font-size:clamp(18px,2.5vw,25px);font-weight:800;letter-spacing:.02em;text-shadow:0 2px 0 #fff,0 3px 10px #f6bdcf}.tagline{margin-top:3px;color:#a97888;font-size:12px}.throw-button{position:absolute;z-index:5;left:50%;bottom:calc(40px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:12px;min-width:248px;min-height:76px;padding:0 34px;border:1px solid #ffeff4;border-radius:28px;background:linear-gradient(145deg,#ffc8d8 0%,#f69dbb 52%,#ea83a7 100%);box-shadow:0 9px 0 #cf7192,0 14px 25px #a74c7440,inset 0 3px 5px #fff9;color:#713d54;font-size:23px;font-weight:800;font-family:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,filter .18s}.throw-button:hover{transform:translate(-50%,-3px);filter:saturate(1.05);box-shadow:0 12px 0 #cf7192,0 18px 28px #a74c7440,inset 0 3px 5px #fff9}.throw-button:active{transform:translate(-50%,3px);box-shadow:0 5px 0 #cf7192,0 9px 18px #a74c7438,inset 0 2px 4px #fff9}.throw-button:disabled{cursor:wait;opacity:.8}.throw-icon{font-size:30px}.status{position:absolute;z-index:6;top:88px;left:50%;max-width:calc(100% - 32px);width:max-content;padding:12px 18px;transform:translateX(-50%);border:1px solid #ffe0e9;border-radius:18px;background:#fffaf5ed;color:#80566a;font-size:14px;text-align:center;box-shadow:0 8px 24px #8c476622;backdrop-filter:blur(10px)}.status[hidden]{display:none}.status.error{background:#fff0f0;color:#a73555}.result-card{position:absolute;z-index:4;right:18px;bottom:calc(132px + env(safe-area-inset-bottom));width:min(390px,calc(100% - 36px));max-height:min(65vh,620px);overflow:auto;padding:21px;border:1px solid #ffe0e9;border-radius:24px;background:#fffaf5f5;box-shadow:0 14px 44px #8c476633;backdrop-filter:blur(14px);animation:card-in .28s ease-out}.result-card[hidden]{display:none}@keyframes card-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}.card-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;color:#a97888;font-size:12px;font-weight:750;letter-spacing:.05em}.close-button{display:grid;width:34px;height:34px;padding:0;place-items:center;border:0;border-radius:50%;background:#ffeaf0;color:#874c68;cursor:pointer;font-size:21px}.destination{margin:0 0 5px;color:#9b536e;font-size:28px;font-weight:850;letter-spacing:-.025em;line-height:1.2;text-shadow:0 1px 0 #fff}.detail-label{margin:15px 0 5px;color:#a97888;font-size:11px;font-weight:750;letter-spacing:.06em}.result-address,.coordinates{margin:0;color:#69465a;font-size:13px;line-height:1.55;overflow-wrap:anywhere}.coordinates{font-variant-numeric:tabular-nums}.ai-analysis{padding:13px 14px;border:1px solid #f1d7e2;border-radius:16px;background:#fff3f7;color:#69465a;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.attribution-footer{position:absolute;z-index:2;bottom:0;left:0;padding:7px 10px calc(7px + env(safe-area-inset-bottom));border-top-right-radius:12px;background:#fffaf5e8;color:#53625b;font-size:10px;pointer-events:none}.maplibregl-ctrl-attrib{font-size:10px!important}.dart-marker{width:44px;height:54px;display:grid;place-items:center;line-height:1;filter:drop-shadow(0 5px 4px #63384f66);user-select:none;pointer-events:none}.flight-dart{position:absolute;z-index:8;left:50%;top:50%;width:44px;height:54px;display:grid;place-items:center;line-height:1;filter:drop-shadow(0 5px 4px #63384f66);pointer-events:none;user-select:none;will-change:left,top,transform,opacity}.flight-dart svg,.dart-marker svg{display:block;width:44px;height:54px;overflow:visible}.flight-dart::before{content:"";position:absolute;z-index:-1;width:58px;left:-42px;top:5px;border-top:2px dashed #ed78a2;opacity:.85;transform:rotate(48deg);transform-origin:right center;animation:trail-pulse .34s ease-in-out infinite alternate}.flight-dart.fly{animation:dart-flight 1.15s cubic-bezier(.2,.72,.18,1) both}.dart-marker.hit svg{animation:impact-bounce .48s cubic-bezier(.18,.85,.28,1.4)}.impact-particle{position:absolute;z-index:9;pointer-events:none;font-size:17px;animation:particle-pop .78s ease-out forwards;will-change:transform,opacity}@keyframes dart-flight{0%{opacity:0;transform:translate(-50%,-50%) rotate(-145deg) scale(.55)}22%{opacity:1}50%{transform:translate(calc(var(--arc-x) - 50%),calc(var(--arc-y) - 50%)) rotate(-24deg) scale(.93)}78%{transform:translate(calc(var(--target-x) - 50%),calc(var(--target-y) - 50%)) rotate(10deg) scale(1.1)}88%{transform:translate(calc(var(--target-x) - 50%),calc(var(--target-y) - 50%)) rotate(-7deg) scale(.94)}100%{opacity:1;transform:translate(calc(var(--target-x) - 50%),calc(var(--target-y) - 50%)) rotate(0) scale(1)}}@keyframes trail-pulse{from{opacity:.35}to{opacity:.95}}@keyframes impact-bounce{0%{transform:scale(1)}32%{transform:scale(1.3) rotate(-14deg)}62%{transform:scale(.88) rotate(8deg)}82%{transform:scale(1.12) rotate(-4deg)}100%{transform:scale(1) rotate(0)}}@keyframes particle-pop{0%{opacity:0;transform:translate(0,0) scale(.3) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.1) rotate(35deg)}}@media(max-width:600px){.topbar{top:12px;left:12px;max-width:calc(100% - 24px);padding:9px 13px 9px 10px}.brand{font-size:clamp(16px,4.3vw,21px)}.tagline{font-size:11px}.throw-button{min-width:220px;min-height:68px;font-size:21px}.result-card{right:10px;bottom:calc(120px + env(safe-area-inset-bottom));width:calc(100% - 20px);max-height:48vh}.status{top:78px}}
+:root{font-family:"ZCOOL KuaiLe","Microsoft YaHei","PingFang SC",sans-serif;color:#684957;background:#fff7f4;font-synthesis:none}*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}#map{position:absolute;inset:0;background:#a2d2ff}.topbar{position:absolute;z-index:3;top:18px;left:18px;display:flex;align-items:center;gap:12px;max-width:calc(100% - 36px);padding:11px 17px 11px 12px;border:1px solid #ffe0e9;border-radius:22px;background:#fffaf5ed;box-shadow:0 8px 28px #ad708034;backdrop-filter:blur(12px);pointer-events:none}.logo{display:grid;flex:none;width:42px;height:42px;place-items:center;border-radius:16px;background:#ffe1e8;font-size:23px}.brand{color:#9b536e;font-size:clamp(18px,2.5vw,25px);font-weight:800;letter-spacing:.02em;text-shadow:0 2px 0 #fff,0 3px 10px #f6bdcf}.tagline{margin-top:3px;color:#a97888;font-size:12px}.throw-button{position:absolute;z-index:5;left:50%;bottom:calc(40px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:12px;min-width:248px;min-height:76px;padding:0 34px;border:1px solid #ffeff4;border-radius:28px;background:linear-gradient(145deg,#ffc8d8 0%,#f69dbb 52%,#ea83a7 100%);box-shadow:0 9px 0 #cf7192,0 14px 25px #a74c7440,inset 0 3px 5px #fff9;color:#713d54;font-size:23px;font-weight:800;font-family:inherit;cursor:pointer;transition:transform .18s,box-shadow .18s,filter .18s}.throw-button:hover{transform:translate(-50%,-3px);filter:saturate(1.05);box-shadow:0 12px 0 #cf7192,0 18px 28px #a74c7440,inset 0 3px 5px #fff9}.throw-button:active{transform:translate(-50%,3px);box-shadow:0 5px 0 #cf7192,0 9px 18px #a74c7438,inset 0 2px 4px #fff9}.throw-button:disabled{cursor:wait;opacity:.8}.throw-icon{font-size:30px}.status{position:absolute;z-index:6;top:88px;left:50%;max-width:calc(100% - 32px);width:max-content;padding:12px 18px;transform:translateX(-50%);border:1px solid #ffe0e9;border-radius:18px;background:#fffaf5ed;color:#80566a;font-size:14px;text-align:center;box-shadow:0 8px 24px #8c476622;backdrop-filter:blur(10px)}.status[hidden]{display:none}.status.error{background:#fff0f0;color:#a73555}.result-card{position:absolute;z-index:4;right:18px;bottom:calc(132px + env(safe-area-inset-bottom));width:min(390px,calc(100% - 36px));max-height:min(65vh,620px);overflow:auto;padding:21px;border:1px solid #ffe0e9;border-radius:24px;background:#fffaf5f5;box-shadow:0 14px 44px #8c476633;backdrop-filter:blur(14px);animation:card-in .28s ease-out}.result-card[hidden]{display:none}@keyframes card-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}.card-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;color:#a97888;font-size:12px;font-weight:750;letter-spacing:.05em}.close-button{display:grid;width:34px;height:34px;padding:0;place-items:center;border:0;border-radius:50%;background:#ffeaf0;color:#874c68;cursor:pointer;font-size:21px}.destination{margin:0 0 5px;color:#9b536e;font-size:28px;font-weight:850;letter-spacing:-.025em;line-height:1.2;text-shadow:0 1px 0 #fff}.detail-label{margin:15px 0 5px;color:#a97888;font-size:11px;font-weight:750;letter-spacing:.06em}.result-address,.coordinates{margin:0;color:#69465a;font-size:13px;line-height:1.55;overflow-wrap:anywhere}.coordinates{font-variant-numeric:tabular-nums}.ai-analysis{padding:13px 14px;border:1px solid #f1d7e2;border-radius:16px;background:#fff3f7;color:#69465a;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.attribution-footer{position:absolute;z-index:2;bottom:0;left:0;padding:7px 10px calc(7px + env(safe-area-inset-bottom));border-top-right-radius:12px;background:#fffaf5e8;color:#53625b;font-size:10px;pointer-events:none}.maplibregl-ctrl-attrib{font-size:10px!important}.fps-stage{position:absolute;inset:0;z-index:8;perspective:800px;perspective-origin:50% 50%;transform-style:preserve-3d;pointer-events:none;overflow:hidden}
+.topbar{z-index:100}
+.throw-button{z-index:101}
+.status{z-index:102}
+.result-card{z-index:110}
+.fps-stage{z-index:10}
+.country-overlay{position:fixed;inset:0;z-index:1;overflow:hidden;pointer-events:none;transform:none!important;contain:layout paint}
+.country-overlay[hidden]{display:none}
+.country-emoji{position:absolute;display:grid;width:36px!important;height:36px!important;min-width:36px;max-width:36px;min-height:36px;max-height:36px;place-items:center;left:0;top:0;transform:translate(-50%,-50%);font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:32px!important;line-height:1;white-space:nowrap;text-shadow:0 0 4px #fff,0 0 4px #fff,0 0 2px #fff;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4)) drop-shadow(0 2px 4px rgba(0,0,0,.2));will-change:transform;pointer-events:none;user-select:none}
+.preference-bar{position:absolute;z-index:101;left:50%;bottom:calc(132px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;justify-content:center;gap:8px;width:max-content;max-width:calc(100% - 20px)}
+.preference-button{flex:none;padding:9px 12px;border:1px solid #ffdce8;border-radius:999px;background:#fffaf5ed;box-shadow:0 5px 14px #9d59752b;color:#9b536e;font:700 13px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;white-space:nowrap;cursor:pointer;transition:transform .18s,background .18s,box-shadow .18s}
+.preference-button:hover{transform:translateY(-2px)}
+.preference-button[aria-pressed="true"]{border-color:#f18baa;background:#ffcadb;box-shadow:0 4px 0 #d989a4,0 7px 16px #9d597533;color:#713d54}
+.result-card{bottom:calc(182px + env(safe-area-inset-bottom));max-height:min(62vh,740px)}
+.trip-report[hidden],.ai-analysis[hidden],.hidden-play[hidden]{display:none}
+.trip-report{display:grid;gap:11px;margin-top:12px}
+.report-pill{display:inline-block;width:fit-content;padding:6px 11px;border-radius:999px;background:#ffe2eb;color:#8d4967;font-size:12px;font-weight:750}
+.report-line{margin:0;color:#69465a;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.report-line strong{color:#9b536e}
+.report-block{padding:12px 13px;border:1px solid #f1d7e2;border-radius:16px;background:#fff3f7}
+.bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;margin-top:8px}
+.bill-item{font-size:12px;color:#69465a;line-height:1.5}
+.bill-total{grid-column:1/-1;margin-top:3px;padding-top:7px;border-top:1px dashed #e8bfd0;font-weight:800;color:#9b536e}
+.bill-note{margin:8px 0 0;color:#a97888;font-size:11px;line-height:1.5}
+.hidden-play{white-space:pre-line}
+.travel-score{font-size:22px;font-weight:850;color:#b24f76}
+.rethink-button{width:100%;min-height:42px;margin-top:3px;border:0;border-radius:16px;background:linear-gradient(135deg,#ffd3e1,#f4a7c4);box-shadow:0 5px 0 #d782a3;color:#713d54;font:800 14px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;cursor:pointer}
+.rethink-button:disabled{opacity:.65;cursor:wait}
+.landed-dart{position:absolute;z-index:9;width:40px;height:40px;transform:translate(-50%,-50%);pointer-events:none;will-change:left,top}
+.landed-dart[hidden]{display:none}
+.landed-dart svg{display:block;width:40px;height:40px}
+.dart-pin{position:absolute;left:50%;top:50%;width:0;height:0;transform:translate3d(0,0,0);transform-style:preserve-3d;will-change:transform;pointer-events:none}
+.impact-shell{position:absolute;left:50%;top:50%;width:0;height:0;transform:translate3d(0,0,0);transform-style:preserve-3d;will-change:transform}
+.impact-shell.shake{animation:hit-shake .15s linear both}
+.dart{position:absolute;left:50%;top:50%;width:0;height:0;transform-origin:0 0 0;transform-style:preserve-3d;transform:translate3d(0,0,0);will-change:transform;backface-visibility:hidden}
+.impact-shell .dart{left:0;top:0}
+.shaft{position:absolute;left:-8px;top:-137.5px;width:16px;height:275px;border:2px solid #a4375d;border-radius:8px;background:linear-gradient(90deg,#9f2c55,#ff82a4 45%,#bd3f68);transform:translateZ(142.5px) rotateX(-90deg)}
+.shaft-side{width:13px;border-color:#bf5172;background:#e35c87;transform:translateZ(142.5px) rotateX(-90deg) rotateY(90deg)}
+.nose{position:absolute;left:-7.5px;top:-7.5px;width:15px;height:15px;border:2px solid #775a62;border-radius:50%;background:#f4d7ae;transform:translateZ(0)}
+.tip-anchor{position:absolute;left:0;top:0;width:0;height:0;transform:translateZ(0)}
+.tail{position:absolute;left:-70px;top:-76px;width:140px;height:152px;transform:translateZ(285px);backface-visibility:hidden}
+.particles{position:absolute;inset:0;z-index:9;pointer-events:none;visibility:hidden;overflow:hidden}
+.particles.active{visibility:visible}
+.particle{position:absolute;left:var(--hit-x, 50%);top:var(--hit-y, 50%);font-size:22px;line-height:1;color:var(--tone);text-shadow:0 0 10px var(--tone);opacity:0;transform:translate3d(-50%,-50%,0);will-change:transform,opacity}
+.particle.coconut{font-size:27px;text-shadow:0 0 5px #FFFDD0,0 0 10px #8B5A2B}
+.particles.active .particle{animation:particle-burst 1.5s cubic-bezier(.16,.8,.2,1) both}
+@keyframes hit-shake{
+  0%{transform:translate3d(1.8px,-1px,0) rotate(.9deg)}
+  20%{transform:translate3d(-1.3px,.8px,0) rotate(-.7deg)}
+  40%{transform:translate3d(.9px,-.5px,0) rotate(.45deg)}
+  60%{transform:translate3d(-.5px,.3px,0) rotate(-.25deg)}
+  80%{transform:translate3d(.2px,-.1px,0) rotate(.1deg)}
+  100%{transform:translate3d(0,0,0) rotate(0deg)}
+}
+@keyframes particle-burst{
+  0%{opacity:1;transform:translate3d(-50%,-50%,0) scale(1.15) rotate(0deg)}
+  30%{opacity:1;transform:translate3d(calc(-50% + var(--burst-x)),calc(-50% + var(--burst-y)),0) scale(1) rotate(var(--burst-rotation))}
+  60%{opacity:.65;transform:translate3d(calc(-50% + var(--sway-x)),calc(-50% + var(--sway-y)),0) scale(.6) rotate(var(--mid-rotation))}
+  100%{opacity:0;transform:translate3d(calc(-50% + var(--final-x)),calc(-50% + var(--final-y)),0) scale(.15) rotate(var(--rotation))}
+}
+@media(max-width:600px){.topbar{top:12px;left:12px;max-width:calc(100% - 24px);padding:9px 13px 9px 10px}.brand{font-size:clamp(16px,4.3vw,21px)}.tagline{font-size:11px}.throw-button{min-width:220px;min-height:68px;font-size:21px}.result-card{right:10px;bottom:calc(120px + env(safe-area-inset-bottom));width:calc(100% - 20px);max-height:48vh}.status{top:78px}}
+@media(max-width:600px){.preference-bar{bottom:calc(120px + env(safe-area-inset-bottom));gap:5px}.preference-button{padding:7px 8px;font-size:11px}.result-card{bottom:calc(168px + env(safe-area-inset-bottom));max-height:44vh}}
 </style>
 </head>
 <body>
 <div id="map" aria-label="申根区地图"></div>
+<div id="country-overlay" class="country-overlay" aria-hidden="true" hidden></div>
+<div id="fps-stage" class="fps-stage" aria-hidden="true"><div id="dart-pin" class="dart-pin" hidden><div class="impact-shell"><div class="dart"><div class="shaft"></div><div class="shaft shaft-side"></div><div class="nose"></div><span class="tip-anchor"></span><img class="tail" alt="" draggable="false" width="140" height="152"
+      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 92 100'%3E%3Cpath d='M42 84 L9 20 Q0 7 8 4 Q28 0 46 45 Z' fill='%23ffb6cb' stroke='%23b43b69' stroke-width='3'/%3E%3Cpath d='M50 84 L83 20 Q92 7 84 4 Q64 0 46 45 Z' fill='%23ff8eae' stroke='%23b43b69' stroke-width='3'/%3E%3Cpath d='M46 37 C29 14 20 39 46 58 C72 39 63 14 46 37 Z' fill='%23fff4f7' stroke='%23d65d83' stroke-width='2'/%3E%3C/svg%3E"></div></div></div><div id="particles" class="particles" aria-hidden="true"></div></div>
 <header class="topbar"><div class="logo" aria-hidden="true">🥥</div><div><div class="brand">椰椰和小鱼的旅行飞镖</div><div class="tagline">把下一站交给一点点运气</div></div></header>
+<div id="preference-bar" class="preference-bar" role="group" aria-label="旅行偏好"><button class="preference-button" type="button" data-preference="history" aria-pressed="false">🏛️ 人文历史</button><button class="preference-button" type="button" data-preference="nature" aria-pressed="false">🌲 自然秘境</button><button class="preference-button" type="button" data-preference="all" aria-pressed="true">🎲 我全都要</button></div>
 <button id="throw-button" class="throw-button" type="button"><span class="throw-icon" aria-hidden="true">🎯</span><span>扔飞镖</span></button>
 <div id="status" class="status" role="status" aria-live="polite" hidden></div>
-<section id="result-card" class="result-card" aria-live="polite" hidden><div class="card-heading"><span>飞镖命中的地方</span><button id="close-card" class="close-button" type="button" aria-label="关闭结果">×</button></div><h2 id="destination" class="destination">—</h2><div class="detail-label">完整地址</div><p id="address" class="result-address">正在获取地址…</p><div class="detail-label">经纬度</div><p id="coordinates" class="coordinates">—</p><div class="detail-label ai-label">AI 周边灵感</div><div id="ai-analysis" class="ai-analysis" aria-live="polite">等待飞镖落点…</div></section>
+<section id="result-card" class="result-card" aria-live="polite" hidden><div class="card-heading"><span>飞镖命中的地方</span><button id="close-card" class="close-button" type="button" aria-label="关闭结果">×</button></div><h2 id="destination" class="destination">-</h2><div class="detail-label">完整地址</div><p id="address" class="result-address">正在获取地址...</p><div class="detail-label">经纬度</div><p id="coordinates" class="coordinates">-</p><div class="detail-label ai-label">AI 周边灵感</div><div id="ai-analysis" class="ai-analysis" aria-live="polite">等待飞镖落点...</div><div id="trip-report" class="trip-report" hidden><span id="style-tag" class="report-pill"></span><p id="match-stars" class="report-line"></p><p id="match-reason" class="report-line"></p><div class="report-block"><p class="report-line"><strong>推荐玩法</strong></p><p id="recommended-play" class="report-line"></p><p id="hidden-play" class="report-line hidden-play" hidden></p></div><div class="report-block"><p class="report-line"><strong>详细账单</strong></p><div class="bill-grid"><span id="bill-transport" class="bill-item"></span><span id="bill-lodging" class="bill-item"></span><span id="bill-food" class="bill-item"></span><span id="bill-total" class="bill-item bill-total"></span></div><p class="bill-note">从英国出发的 3-7 天行程,英镑粗估.含往返及当地交通,请以实际报价为准.</p></div><div class="report-block"><p class="report-line"><strong>季节适宜度</strong></p><p id="season-tip" class="report-line"></p></div><div class="report-block"><p class="report-line"><strong>最终旅行指数</strong></p><p id="travel-score" class="travel-score"></p><p id="romantic-comment" class="report-line"></p></div></div><button id="rethink-button" class="rethink-button" type="button" disabled>🔄 换个偏好试试</button></section>
 <div class="attribution-footer">© OpenStreetMap contributors</div>
 <script>
 (()=>{
@@ -22,10 +87,73 @@
  const SCHENGEN=new Set(["AT","BE","BG","HR","CZ","DK","EE","FI","FR","DE","GR","HU","IS","IT","LV","LI","LT","LU","MT","NL","NO","PL","PT","RO","SK","SI","ES","SE","CH"]);
  const ISO3={AUT:"AT",BEL:"BE",BGR:"BG",HRV:"HR",CZE:"CZ",DNK:"DK",EST:"EE",FIN:"FI",FRA:"FR",DEU:"DE",GRC:"GR",HUN:"HU",ISL:"IS",ITA:"IT",LVA:"LV",LIE:"LI",LTU:"LT",LUX:"LU",MLT:"MT",NLD:"NL",NOR:"NO",POL:"PL",PRT:"PT",ROU:"RO",SVK:"SK",SVN:"SI",ESP:"ES",SWE:"SE",CHE:"CH"};
  const BORDER_URL="https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson";
- const map=new maplibregl.Map({container:"map",style:"https://tiles.openfreemap.org/styles/liberty",center:[15,53],zoom:3.25,minZoom:2,maxZoom:18,attributionControl:false});\n map.on("style.load",()=>{const style=map.getStyle();for(const layer of style.layers||[]){if(layer.type!=="background"&&layer.type!=="fill")continue;const id=layer.id.toLowerCase(),sourceLayer=String(layer["source-layer"]||"").toLowerCase();const water=/water|ocean|lake|river|sea/.test(id)||/water/.test(sourceLayer);if(!water)continue;const property=layer.type==="background"?"background-color":"fill-color";try{map.setPaintProperty(layer.id,property,"#A2D2FF")}catch(error){console.log("无法设置水体图层颜色",layer.id,error)}}});
+ const map=new maplibregl.Map({container:"map",style:"https://tiles.openfreemap.org/styles/liberty",center:[15,53],zoom:3.25,minZoom:2,maxZoom:18,attributionControl:false});
+ map.on("style.load",()=>{const style=map.getStyle();for(const layer of style.layers||[]){if(layer.type!=="background"&&layer.type!=="fill")continue;const id=layer.id.toLowerCase(),sourceLayer=String(layer["source-layer"]||"").toLowerCase();const water=/water|ocean|lake|river|sea/.test(id)||/water/.test(sourceLayer);if(!water)continue;const property=layer.type==="background"?"background-color":"fill-color";try{map.setPaintProperty(layer.id,property,"#A2D2FF")}catch(error){console.log("无法设置水体图层颜色",layer.id,error)}}});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),"top-right");map.addControl(new maplibregl.AttributionControl({compact:true,customAttribution:"© OpenStreetMap contributors"}),"bottom-right");
- const button=document.getElementById("throw-button"),card=document.getElementById("result-card"),destination=document.getElementById("destination"),addressEl=document.getElementById("address"),coordinatesEl=document.getElementById("coordinates"),aiAnalysis=document.getElementById("ai-analysis"),status=document.getElementById("status");
- let polygons=[],marker=null,flightElement=null,flightPoint=null,moveHandler=null,statusTimer=null,round=0,bordersReady=false,busy=false,lastNominatim=0,nominatimController=null;
+ const COUNTRY_ICONS=[
+  {name:"奥地利",center:[14.20,47.00],emoji:"🎻"},
+  {name:"比利时",center:[5.70,50.30],emoji:"🍟"},
+  {name:"保加利亚",center:[27.10,42.60],emoji:"🌹"},
+  {name:"克罗地亚",center:[15.90,44.20],emoji:"🏖️"},
+  {name:"捷克",center:[14.00,49.30],emoji:"🍺"},
+  {name:"丹麦",center:[8.70,55.80],emoji:"🍪"},
+  {name:"爱沙尼亚",center:[23.60,58.80],emoji:"🌲"},
+  {name:"芬兰",center:[24.00,64.50],emoji:"🎅"},
+  {name:"法国",center:[-1.00,46.70],emoji:"🥐"},
+  {name:"德国",center:[7.40,52.50],emoji:"🥨"},
+  {name:"希腊",center:[21.40,39.20],emoji:"🏛️"},
+  {name:"匈牙利",center:[17.90,46.90],emoji:"🌶️"},
+  {name:"冰岛",center:[-20.20,65.00],emoji:"🌋"},
+  {name:"意大利",center:[11.00,43.40],emoji:"🍕"},
+  {name:"拉脱维亚",center:[21.80,57.40],emoji:"🧶"},
+  {name:"列支敦士登",center:[9.50,47.22],emoji:"🏰"},
+  {name:"立陶宛",center:[21.50,55.90],emoji:"🏀"},
+  {name:"卢森堡",center:[5.90,49.70],emoji:"👑"},
+  {name:"马耳他",center:[14.27,36.04],emoji:"⛵"},
+  {name:"荷兰",center:[4.80,53.00],emoji:"🌷"},
+  {name:"挪威",center:[6.30,61.50],emoji:"🐟"},
+  {name:"波兰",center:[16.50,53.90],emoji:"🥟"},
+  {name:"葡萄牙",center:[-8.70,40.00],emoji:"🥧"},
+  {name:"罗马尼亚",center:[22.50,45.50],emoji:"🐻"},
+  {name:"斯洛伐克",center:[18.30,49.30],emoji:"🏔️"},
+  {name:"斯洛文尼亚",center:[13.90,45.80],emoji:"🐉"},
+  {name:"西班牙",center:[-5.50,42.30],emoji:"🥘"},
+  {name:"瑞典",center:[13.30,58.80],emoji:"🦌"},
+  {name:"瑞士",center:[7.70,46.20],emoji:"🍫"}
+ ];
+ const countryOverlay=document.getElementById("country-overlay");
+ const countryElements=COUNTRY_ICONS.map(country=>{
+  const element=document.createElement("span");
+  element.className="country-emoji";
+  element.textContent=country.emoji;
+  element.setAttribute("aria-label",country.name+"代表物");
+  countryOverlay.appendChild(element);
+  return element
+ });
+ function positionCountryIcons(){
+  const pixelRatio=window.devicePixelRatio||1;
+  COUNTRY_ICONS.forEach((country,index)=>{
+   const pixel=map.project(country.center);
+   countryElements[index].style.left=Math.round(pixel.x*pixelRatio)/pixelRatio+"px";
+   countryElements[index].style.top=Math.round(pixel.y*pixelRatio)/pixelRatio+"px"
+  })
+ }
+ map.on("move",positionCountryIcons);
+ map.on("zoom",positionCountryIcons);
+ map.on("resize",positionCountryIcons);
+ map.once("load",()=>{
+  positionCountryIcons();
+  countryOverlay.hidden=false
+ });
+ const button=document.getElementById("throw-button"),card=document.getElementById("result-card"),status=document.getElementById("status"),preferenceBar=document.getElementById("preference-bar");
+ const cardTemplate=card.innerHTML,stage=document.getElementById("fps-stage"),stageTemplate=stage.innerHTML;
+ let destination=document.getElementById("destination"),addressEl=document.getElementById("address"),coordinatesEl=document.getElementById("coordinates"),aiAnalysis=document.getElementById("ai-analysis"),tripReport=document.getElementById("trip-report"),rethinkButton=document.getElementById("rethink-button");
+ let currentPreference="all",currentLanding=null,analysisController=null,analysisRequestId=0;
+ let polygons=[],dartPoint=null,statusTimer=null,round=0,bordersReady=false,isAnimating=false,readyToReset=false,lastNominatim=0,nominatimController=null;
+ let pin=null,dart=null,impactShell=null,particleLayer=null,tail=null,landedMarker=null;
+ stage.innerHTML="";
+ const flightDuration=2000,settleDuration=80;
+ let flightFrame=0,flightActive=false,impactActive=false;
  const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  function setStatus(message,error=false,duration=0){clearTimeout(statusTimer);status.textContent=message;status.className="status"+(error?" error":"");status.hidden=false;if(duration)statusTimer=setTimeout(()=>status.hidden=true,duration)}
  function clearStatus(){clearTimeout(statusTimer);status.hidden=true}
@@ -34,17 +162,381 @@
  function insideSchengen(point){const feature=turf.point([point.lng,point.lat]);return polygons.some(poly=>turf.booleanPointInPolygon(feature,poly))}
  function randomPoint(){const b=turf.bbox(turf.featureCollection(polygons));return turf.point([b[0]+Math.random()*(b[2]-b[0]),b[1]+Math.random()*(b[3]-b[1])])}
  function validRandomPoint(){for(let i=0;i<20000;i++){const p=randomPoint();if(insideSchengen({lng:p.geometry.coordinates[0],lat:p.geometry.coordinates[1]}))return p}throw Error("暂时无法在申根区生成随机落点")}
- function clearMarker(){if(marker){marker.remove();marker=null}}
- function positionFlight(){if(!flightElement||!flightPoint)return;const p=map.project(flightPoint);flightElement.style.setProperty("--target-x",`${p.x}px`);flightElement.style.setProperty("--target-y",`${p.y}px`);flightElement.style.left="50%";flightElement.style.top="50%"}
- function spawnImpact(lngLat){const container=map.getContainer(),p=map.project(lngLat);for(let i=0;i<7;i++){const particle=document.createElement("span");particle.className="impact-particle";particle.textContent=i%2?"✦":"♥";particle.style.left=`${p.x-7}px`;particle.style.top=`${p.y-10}px`;particle.style.setProperty("--dx",`${Math.round((Math.random()-.5)*90)}px`);particle.style.setProperty("--dy",`${Math.round(-24-Math.random()*65)}px`);container.appendChild(particle);particle.addEventListener("animationend",()=>particle.remove(),{once:true})}}
- function throwMarker(lngLat){clearMarker();if(flightElement){flightElement.remove();flightElement=null}if(moveHandler){map.off("move",moveHandler);map.off("zoom",moveHandler);moveHandler=null}const container=map.getContainer();flightElement=document.createElement("div");flightElement.className="flight-dart fly";flightElement.innerHTML='<svg viewBox="0 0 44 54" aria-hidden="true"><path d="M7 5L22 27" stroke="#b93459" stroke-width="4.2" stroke-linecap="round"/><path d="M22 27L15.5 21.5L19.5 20Z" fill="#f04f77" stroke="#a52e52" stroke-width="1.2"/><path d="M5 4C1 0-3 6 5 12C13 6 9 0 5 4Z" transform="translate(4 0) rotate(-18 5 6)" fill="#ff8eae" stroke="#c23a62" stroke-width="1.2"/><path d="M14 2C10 -2 6 4 14 10C22 4 18 -2 14 2Z" transform="translate(0 1) rotate(20 14 5)" fill="#ffc0d3" stroke="#c23a62" stroke-width="1.2"/><circle cx="22" cy="27" r="2.3" fill="#ffcf72"/></svg>';flightElement.setAttribute("aria-label","飞镖飞行中");flightPoint=maplibregl.LngLat.convert(lngLat);const center=map.project(flightPoint),rect=container.getBoundingClientRect();flightElement.style.setProperty("--target-x",`${center.x}px`);flightElement.style.setProperty("--target-y",`${center.y}px`);flightElement.style.setProperty("--arc-x",`${center.x*.48+rect.width*.12}px`);flightElement.style.setProperty("--arc-y",`${center.y*.48-75}px`);container.appendChild(flightElement);moveHandler=positionFlight;positionFlight();map.on("move",moveHandler);map.on("zoom",moveHandler);return new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;flightElement.classList.remove("fly");flightElement.classList.add("dart-marker","hit");flightElement.setAttribute("aria-label","飞镖命中点");flightElement.style.pointerEvents="none";resolve()};flightElement.addEventListener("animationend",finish,{once:true});setTimeout(finish,1300)})}
- function pinDart(lngLat){if(!flightElement)return;if(moveHandler){map.off("move",moveHandler);map.off("zoom",moveHandler);moveHandler=null}flightElement.style.removeProperty("left");flightElement.style.removeProperty("top");flightElement.style.removeProperty("--target-x");flightElement.style.removeProperty("--target-y");flightElement.style.removeProperty("--arc-x");flightElement.style.removeProperty("--arc-y");marker=new maplibregl.Marker({element:flightElement,anchor:"center"}).setLngLat(lngLat).addTo(map);spawnImpact(lngLat);flightElement=null;flightPoint=null} function niceName(tags){return tags["name:zh"]||tags.name||tags["name:en"]||"未命名地点"}
+
+ const particleIcons=["♥","🐟","🫧","✨","🥥"];
+ const particleColors=["#FFB6C1","#A2D2FF","#A2D2FF","#FFFDD0","#8B5A2B"];
+ function createFlightElements(){
+  stage.innerHTML=stageTemplate;
+  pin=stage.querySelector("#dart-pin");
+  dart=pin.querySelector(".dart");
+  impactShell=pin.querySelector(".impact-shell");
+  particleLayer=stage.querySelector("#particles");
+  tail=pin.querySelector(".tail");
+  landedMarker=document.createElement("div");
+  landedMarker.className="landed-dart";
+  landedMarker.hidden=true;
+  landedMarker.setAttribute("aria-label","飞镖命中点");
+  landedMarker.innerHTML='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 9 C2 4 0 11 8 15 L15 19 L13 11 C12 6 9 6 7 9 Z" fill="#ffb6cb" stroke="#b43b69" stroke-width="1.5"/><path d="M10 5 C6 2 5 9 12 14 L16 18 L16 9 C15 5 12 4 10 5 Z" fill="#ff8eae" stroke="#b43b69" stroke-width="1.5"/><path d="M13 13 L20 20" stroke="#a4375d" stroke-width="5" stroke-linecap="round"/><path d="M17 17 L20 20 L17.5 19" fill="#f4d7ae" stroke="#775a62" stroke-width="1"/></svg>';
+  map.getContainer().appendChild(landedMarker);
+  const particleFragment=document.createDocumentFragment();
+  const particleElements=[];
+  for(let i=0;i<25;i++){
+   const particle=document.createElement("span");
+   const angle=2*Math.PI*i/24+(Math.random()-.5)*.28;
+   const distance=75+Math.random()*95;
+   const x=Math.cos(angle)*distance,y=Math.sin(angle)*distance;
+   const sway=(Math.random()-.5)*36,rise=65+Math.random()*75;
+   particle.className=i%particleIcons.length===4?"particle coconut":"particle";
+   particle.textContent=particleIcons[i%particleIcons.length];
+   particle.style.setProperty("--tone",particleColors[i%particleColors.length]);
+   particle.style.setProperty("--burst-x",x*.82+"px");
+   particle.style.setProperty("--burst-y",y*.82+"px");
+   particle.style.setProperty("--sway-x",x-sway+"px");
+   particle.style.setProperty("--sway-y",y-rise*.45+"px");
+   particle.style.setProperty("--final-x",x+sway+"px");
+   particle.style.setProperty("--final-y",y-rise+"px");
+   const rotation=(Math.random()-.5)*180;
+   particle.style.setProperty("--burst-rotation",rotation*.3+"deg");
+   particle.style.setProperty("--mid-rotation",rotation*.6+"deg");
+   particle.style.setProperty("--rotation",rotation+"deg");
+   particleFragment.appendChild(particle);
+   particleElements.push(particle)
+  }
+  particleLayer.appendChild(particleFragment);
+  tail.decode().catch(error=>console.log("Tail image decode",error));
+  impactShell.addEventListener("animationend",event=>{
+   if(event.animationName==="hit-shake")impactShell.classList.remove("shake")
+  });
+  particleLayer.addEventListener("animationend",event=>{
+   if(event.target!==particleElements[0]||event.animationName!=="particle-burst")return;
+   particleLayer.classList.remove("active");
+   particleLayer.style.display="none"
+  });
+  map.on("move",positionDart);
+  map.on("zoom",positionDart);
+  map.on("resize",positionDart)
+ }
+ function destroyFlightElements(){
+  cancelAnimationFrame(flightFrame);
+  flightFrame=0;
+  flightActive=false;
+  impactActive=false;
+  dartPoint=null;
+  map.off("move",positionDart);
+  map.off("zoom",positionDart);
+  map.off("resize",positionDart);
+  if(pin)pin.remove();
+  if(particleLayer)particleLayer.remove();
+  if(landedMarker)landedMarker.remove();
+  stage.innerHTML="";
+  pin=null;
+  dart=null;
+  impactShell=null;
+  particleLayer=null;
+  tail=null;
+  landedMarker=null
+ }
+ function positionDart(){
+  if(!dartPoint||!landedMarker||!particleLayer||flightActive)return;
+  const pixel=map.project([dartPoint.lng,dartPoint.lat]);
+  landedMarker.style.left=pixel.x+"px";
+  landedMarker.style.top=pixel.y+"px";
+  particleLayer.style.setProperty("--hit-x",pixel.x+"px");
+  particleLayer.style.setProperty("--hit-y",pixel.y+"px")
+ }
+ function easeOutCubic(t){return 1-Math.pow(1-t,3)}
+ function renderFlight(progress){
+  const eased=1-(1-progress)*(1-progress);
+  const p=.65*eased+.35*progress;
+  const y=72*(1-p)-432*p*(1-p);
+  const z=150-800*p;
+  const scale=1.4-.52*p;
+  const pitch=10-42*(1-p)*(1-p);
+  const yaw=-8*(1-p)*(1-p);
+  dart.style.transform="translate3d(0,"+y+"px,"+z+"px) rotateX("+pitch+"deg) rotateY("+yaw+"deg) scale("+scale+")"
+ }
+ function renderImpact(progress){
+  const z=progress<.4?-650-20*easeOutCubic(progress/.4):-670+5*easeOutCubic((progress-.4)/.6);
+  dart.style.transform="translate3d(0,0,"+z+"px) rotateX(10deg) rotateY(0deg) scale(.88)"
+ }
+ function triggerImpact(){
+  const contactStamp=performance.now();
+  impactShell.classList.add("shake");
+  particleLayer.classList.add("active");
+  const particleStamp=performance.now();
+  console.log("Contact:",contactStamp.toFixed(2),"ms; particles:",particleStamp.toFixed(2),"ms; delta:",(particleStamp-contactStamp).toFixed(2),"ms")
+ }
+ function moveFlightAnchor(progress,point){
+  const rect=map.getContainer().getBoundingClientRect();
+  const pixel=map.project([point.lng,point.lat]);
+  const approach=.65*(1-(1-progress)*(1-progress))+.35*progress;
+  const startY=rect.height*.39;
+  const visibleX=Math.max(0,Math.min(rect.width,pixel.x));
+  const visibleY=Math.max(0,Math.min(rect.height,pixel.y));
+  const x=(visibleX-rect.width/2)*approach;
+  const y=startY*(1-approach)+(visibleY-rect.height/2)*approach;
+  pin.style.transform="translate3d("+x+"px,"+y+"px,0)"
+ }
+ function flyDart(point){
+  cancelAnimationFrame(flightFrame);
+  dartPoint=point;
+  flightActive=true;
+  impactActive=false;
+  pin.hidden=false;
+  impactShell.classList.remove("shake");
+  particleLayer.classList.remove("active");
+  particleLayer.style.display="block";
+  renderFlight(0);
+  moveFlightAnchor(0,point);
+  return new Promise(resolve=>{
+   let start=null,impactStart=null;
+   function tick(now){
+    if(start===null)start=now;
+    const elapsed=now-start;
+    if(!impactActive){
+     if(elapsed<flightDuration){
+      const progress=elapsed/flightDuration;
+      moveFlightAnchor(progress,point);
+      renderFlight(progress)
+     }else{
+      moveFlightAnchor(1,point);
+      renderFlight(1);
+      flightActive=false;
+      positionDart();
+      triggerImpact();
+      impactActive=true;
+      impactStart=now
+     }
+    }else{
+     const progress=Math.min((now-impactStart)/settleDuration,1);
+     renderImpact(progress);
+     if(progress>=1){
+      flightFrame=0;
+      pin.hidden=true;
+      landedMarker.hidden=false;
+      positionDart();
+      resolve();
+      return
+     }
+    }
+    flightFrame=requestAnimationFrame(tick)
+   }
+   flightFrame=requestAnimationFrame(tick)
+  })
+ }
  async function requestNominatim(point,token){const elapsed=Date.now()-lastNominatim;if(elapsed<1100)await pause(1100-elapsed);if(token!==round)return null;lastNominatim=Date.now();nominatimController=new AbortController();const url=new URL("https://nominatim.openstreetmap.org/reverse");url.search=new URLSearchParams({format:"jsonv2",lat:String(point.lat),lon:String(point.lng),zoom:"10",addressdetails:"1"});console.log("Nominatim 请求",url.href);const response=await fetch(url,{headers:{Accept:"application/json"},signal:nominatimController.signal});if(!response.ok)throw Error(`地名查询 HTTP ${response.status}`);const data=await response.json();console.log("Nominatim 结果",url.href,data);return data}
- async function loadResult(point,token){destination.textContent="正在识别地点…";addressEl.textContent="正在获取地址…";coordinatesEl.textContent=`${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}`;aiAnalysis.textContent="等待地点信息…";card.hidden=false;let place;try{place=await requestNominatim(point,token);if(token!==round)return;if(!place||!place.address)throw new Error("地名服务未返回有效地址信息")}catch(error){if(error.name==="AbortError"||token!==round)return;destination.textContent="无法识别地点";addressEl.textContent="暂时无法获取地址";aiAnalysis.textContent="暂时无法获取地点信息，无法分析周边推荐。";console.log("Nominatim 请求失败，未调用 AI",error);return}const a=place.address;destination.textContent=a.city||a.town||a.village||a.municipality||a.county||a.state||a.region||place.name||place.display_name?.split(",")[0]||"未知地点";addressEl.textContent=place.display_name||Object.values(a).filter(Boolean).join(", ")||"未能获取完整地址";const prompt=`请用简短中文介绍一下${destination.textContent}（${addressEl.textContent}）附近有什么好玩的地方，推荐几个类型的景点，字数控制在150字以内。飞镖落点坐标：${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}。你没有实时地图或营业状态数据；不确定的具体地点请提醒用户核实，不要编造精确地址或开放时间。`;aiAnalysis.textContent="AI 正在为你分析周边好玩的地方...";try{const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),35000);let response,data;try{response=await fetch("/api/deepseek",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({prompt}),signal:controller.signal});data=await response.json().catch(()=>({}))}finally{clearTimeout(timeout)}if(token!==round)return;if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);if(typeof data.analysis!=="string"||!data.analysis.trim())throw new Error("AI 服务返回内容为空");aiAnalysis.textContent=data.analysis.trim()}catch(error){if(token!==round)return;aiAnalysis.textContent=error.name==="AbortError"?"AI 分析超时，请稍后再试。":"AI 暂时无法生成推荐，请稍后重试。";console.log("/api/deepseek 请求失败",error)}} async function throwDart(){if(busy)return;busy=true;button.disabled=true;button.querySelector("span:last-child").textContent="飞镖出发中…";card.hidden=true;clearStatus();if(nominatimController)nominatimController.abort();const token=++round;try{if(!bordersReady){setStatus("正在加载申根区地图边界…");await waitForBorders();if(!bordersReady)throw Error("申根区边界无法加载，请检查网络后刷新页面")};const point=validRandomPoint(),lngLat={lng:point.geometry.coordinates[0],lat:point.geometry.coordinates[1]};await throwMarker(lngLat);if(token!==round)return;map.flyTo({center:[lngLat.lng,lngLat.lat],zoom:12,duration:1500,essential:true});await new Promise(resolve=>map.once("moveend",resolve));if(token!==round)return;pinDart(lngLat);clearStatus();setStatus("命中！正在获取地名和地址…");await loadResult(lngLat,token);if(token===round)clearStatus()}catch(error){if(token===round){setStatus(error.message||"这次没有成功，请再试一次。",true,5000);console.error(error)}}finally{if(token===round){busy=false;button.disabled=false;button.querySelector("span:last-child").textContent="再扔一次"}}}
+ function preferenceName(value){
+  return value==="history"?"人文历史":value==="nature"?"自然秘境":"全都要"
+ }
+ function parseTravelReport(value){
+  if(!value||typeof value!=="object"||Array.isArray(value))throw new Error("Invalid report");
+  const required=(text)=>{
+   if(typeof text!=="string"||!text.trim())throw new Error("Missing report field");
+   return text.trim()
+  };
+  const tags=Array.isArray(value.tags)?value.tags.map(required):[required(value.tags)];
+  if(!tags.length)throw new Error("Missing tags");
+  const match=value.preferenceMatch;
+  if(!match||!["高","中","低"].includes(match.level))throw new Error("Invalid preference match");
+  if(!Array.isArray(value.alternativeSpots))throw new Error("Invalid alternative spots");
+  const alternatives=value.alternativeSpots.map(spot=>({name:required(spot.name),distance:required(spot.distance),reason:required(spot.reason)}));
+  const budget=value.budget||{};
+  const seasonal=value.seasonalBonus||{};
+  const score=Number(value.totalScore);
+  if(!Number.isFinite(score)||score<1||score>10)throw new Error("Invalid score");
+  return {
+   destination:required(value.destination),tags,
+   preferenceMatch:{level:match.level,reason:required(match.reason)},
+   alternativeSpots:alternatives,
+   recommendedPlay:typeof value.recommendedPlay==="string"?value.recommendedPlay.trim():"",
+   budget:{transport:required(budget.transport),hotel:required(budget.hotel),food:required(budget.food),totalRange:required(budget.totalRange)},
+   seasonalBonus:{season:required(seasonal.season),bonus:required(seasonal.bonus),reason:required(seasonal.reason)},
+   totalScore:score,summary:required(value.summary)
+  }
+ }
+ function renderTripReport(report){
+  const matchStars=report.preferenceMatch.level==="高"?"⭐⭐⭐⭐⭐":report.preferenceMatch.level==="中"?"⭐⭐⭐":"⭐";
+  card.querySelector("#style-tag").textContent=report.tags.join(" · ");
+  card.querySelector("#match-stars").textContent="偏好契合度: "+matchStars+" ("+report.preferenceMatch.level+")";
+  card.querySelector("#match-reason").textContent=report.preferenceMatch.reason;
+  card.querySelector("#recommended-play").textContent=report.recommendedPlay||"围绕 "+report.destination+" 慢慢探索";
+  const hiddenPlay=card.querySelector("#hidden-play");
+  hiddenPlay.hidden=report.alternativeSpots.length===0;
+  hiddenPlay.textContent=report.alternativeSpots.length?"附近隐藏玩法: "+report.alternativeSpots.map(spot=>spot.name+" ("+spot.distance+") - "+spot.reason).join("\n"):"";
+  card.querySelector("#bill-transport").textContent="✈️ 交通: "+report.budget.transport;
+  card.querySelector("#bill-lodging").textContent="🏨 住宿: "+report.budget.hotel;
+  card.querySelector("#bill-food").textContent="🍽️ 餐饮: "+report.budget.food;
+  card.querySelector("#bill-total").textContent="预估总花费: "+report.budget.totalRange;
+  card.querySelector("#season-tip").textContent=report.seasonalBonus.season+" · "+report.seasonalBonus.bonus+" - "+report.seasonalBonus.reason;
+  card.querySelector("#travel-score").textContent=report.totalScore.toFixed(1)+" / 10";
+  card.querySelector("#romantic-comment").textContent=report.summary;
+  tripReport.hidden=false;
+  aiAnalysis.hidden=true
+ }
+ function currentMonthInUK(){
+  return Number(new Intl.DateTimeFormat("en-GB",{month:"numeric",timeZone:"Europe/London"}).format(new Date()))
+ }
+ async function requestTripReport(landing,preference,token){
+  if(analysisController)analysisController.abort();
+  const requestId=++analysisRequestId;
+  analysisController=new AbortController();
+  const controller=analysisController;
+  const timeout=setTimeout(()=>controller.abort(),35000);
+  const hadReport=!tripReport.hidden;
+  rethinkButton.disabled=true;
+  aiAnalysis.hidden=false;
+  aiAnalysis.textContent=hadReport?"AI 正在按新偏好重新分析...":"AI 正在为你分析周边好玩的地方...";
+  try{
+   const response=await fetch("/api/deepseek",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Accept":"application/json"},
+    body:JSON.stringify({location:landing.name,address:landing.address,preference:preferenceName(preference),currentMonth:currentMonthInUK()}),
+    signal:controller.signal
+   });
+   let data;
+   try{data=await response.json()}catch(error){throw new Error("Invalid JSON response")}
+   if(token!==round||requestId!==analysisRequestId)return;
+   if(!response.ok)throw new Error(data.error||"HTTP "+response.status);
+   const report=parseTravelReport(data.report);
+   renderTripReport(report)
+  }catch(error){
+   if(token!==round||requestId!==analysisRequestId)return;
+   aiAnalysis.hidden=false;
+   aiAnalysis.textContent="暂时无法分析，请重试";
+   if(hadReport)tripReport.hidden=false;
+   console.log("/api/deepseek 请求失败",error)
+  }finally{
+   clearTimeout(timeout);
+   if(token===round&&requestId===analysisRequestId)rethinkButton.disabled=false
+  }
+ }
+ async function loadResult(point,token){
+  destination.textContent="正在识别地点...";
+  addressEl.textContent="正在获取地址...";
+  coordinatesEl.textContent=point.lat.toFixed(6)+", "+point.lng.toFixed(6);
+  aiAnalysis.textContent="等待地点信息...";
+  aiAnalysis.hidden=false;
+  tripReport.hidden=true;
+  rethinkButton.disabled=true;
+  card.hidden=false;
+  let place;
+  try{
+   place=await requestNominatim(point,token);
+   if(token!==round)return;
+   if(!place||!place.address)throw new Error("地名服务未返回有效地址信息")
+  }catch(error){
+   if(error.name==="AbortError"||token!==round)return;
+   destination.textContent="无法识别地点";
+   addressEl.textContent="暂时无法获取地址";
+   aiAnalysis.textContent="暂时无法获取地点信息,无法分析周边推荐.";
+   console.log("Nominatim 请求失败,未调用 AI",error);
+   return
+  }
+  const address=place.address;
+  destination.textContent=address.city||address.town||address.village||address.municipality||address.county||address.state||address.region||place.name||place.display_name?.split(",")[0]||"未知地点";
+  addressEl.textContent=place.display_name||Object.values(address).filter(Boolean).join(", ")||"未能获取完整地址";
+  currentLanding={point,name:destination.textContent,address:addressEl.textContent};
+  await requestTripReport(currentLanding,currentPreference,token)
+ }
+ function restoreCard(){
+  if(card.innerHTML)return;
+  card.innerHTML=cardTemplate;
+  destination=card.querySelector("#destination");
+  addressEl=card.querySelector("#address");
+  coordinatesEl=card.querySelector("#coordinates");
+  aiAnalysis=card.querySelector("#ai-analysis");
+  tripReport=card.querySelector("#trip-report");
+  rethinkButton=card.querySelector("#rethink-button")
+ }
+ async function throwDart(){
+  button.querySelector("span:last-child").textContent="飞镖出发中...";
+  restoreCard();
+  card.hidden=true;
+  clearStatus();
+  const token=++round;
+  try{
+   if(!bordersReady){
+    setStatus("正在加载申根区地图边界...");
+    await waitForBorders();
+    if(!bordersReady)throw Error("申根区边界无法加载,请检查网络后刷新页面")
+   }
+   const p=validRandomPoint();
+   const point={lng:p.geometry.coordinates[0],lat:p.geometry.coordinates[1]};
+   createFlightElements();
+   const cameraDone=new Promise(resolve=>map.once("moveend",resolve));
+   map.flyTo({center:[point.lng,point.lat],zoom:12,duration:2000,essential:true,easing:t=>t});
+   await Promise.all([flyDart(point),cameraDone]);
+   if(token!==round)return;
+   await pause(300);
+   if(token!==round)return;
+   loadResult(point,token).catch(error=>console.error("结果加载失败",error));
+   readyToReset=true;
+   clearStatus()
+  }catch(error){
+   if(token===round){
+    destroyFlightElements();
+    setStatus(error.message||"这次没有成功,请再试一次.",true,5000);
+    console.error(error)
+   }
+  }
+ }
+ async function resetRound(){
+  round++;
+  if(nominatimController)nominatimController.abort();
+  if(analysisController)analysisController.abort();
+  analysisRequestId++;
+  currentLanding=null;
+  destroyFlightElements();
+  card.hidden=true;
+  card.innerHTML="";
+  destination=null;
+  addressEl=null;
+  coordinatesEl=null;
+  aiAnalysis=null;
+  tripReport=null;
+  rethinkButton=null;
+  readyToReset=false;
+  clearStatus();
+  button.querySelector("span:last-child").textContent="返回全景中...";
+  const resetDone=new Promise(resolve=>map.once("moveend",resolve));
+  map.flyTo({center:[15,53],zoom:4,duration:1500,essential:true});
+  await resetDone;
+  await pause(500)
+ }
+ async function handleButtonClick(){
+  if(isAnimating)return;
+  isAnimating=true;
+  button.disabled=true;
+  try{
+   if(readyToReset)await resetRound();
+   else await throwDart()
+  }catch(error){
+   setStatus(error.message||"操作失败,请再试一次.",true,5000);
+   console.error(error)
+  }finally{
+   isAnimating=false;
+   button.disabled=false;
+   button.querySelector("span:last-child").textContent=readyToReset?"再扔一次":"扔飞镖"
+  }
+ }
  let bordersPromise=null;function waitForBorders(){if(!bordersPromise)bordersPromise=loadBorders().catch(error=>{console.error(error);bordersReady=false;bordersPromise=null;clearStatus();return false});return bordersPromise}
- button.addEventListener("click",throwDart);document.getElementById("close-card").addEventListener("click",()=>card.hidden=true);
+ button.addEventListener("click",handleButtonClick);
+ preferenceBar.addEventListener("click",event=>{
+  const selected=event.target.closest("[data-preference]");
+  if(!selected)return;
+  currentPreference=selected.dataset.preference;
+  preferenceBar.querySelectorAll("[data-preference]").forEach(item=>item.setAttribute("aria-pressed",String(item===selected)))
+ });
+ card.addEventListener("click",event=>{
+  if(event.target.closest("#close-card"))card.hidden=true;
+  if(event.target.closest("#rethink-button")&&currentLanding&&!rethinkButton.disabled){
+   requestTripReport(currentLanding,currentPreference,round).catch(error=>console.log("重新分析失败",error))
+  }
+ });
  waitForBorders().catch(()=>{});
 })();
 </script>
 </body>
 </html>
+
+
