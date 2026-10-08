@@ -324,7 +324,9 @@
    flightFrame=requestAnimationFrame(tick)
   })
  }
- async function requestNominatim(point,token){const elapsed=Date.now()-lastNominatim;if(elapsed<1100)await pause(1100-elapsed);if(token!==round)return null;lastNominatim=Date.now();nominatimController=new AbortController();const url=new URL("https://nominatim.openstreetmap.org/reverse");url.search=new URLSearchParams({format:"jsonv2",lat:String(point.lat),lon:String(point.lng),zoom:"10",addressdetails:"1"});console.log("Nominatim 请求",url.href);const response=await fetch(url,{headers:{Accept:"application/json"},signal:nominatimController.signal});if(!response.ok)throw Error(`地名查询 HTTP ${response.status}`);const data=await response.json();console.log("Nominatim 结果",url.href,data);return data}
+ async function requestNominatim(point,token,language){const elapsed=Date.now()-lastNominatim;if(elapsed<1100)await pause(1100-elapsed);if(token!==round)return null;lastNominatim=Date.now();nominatimController=new AbortController();const url=new URL("https://nominatim.openstreetmap.org/reverse");url.search=new URLSearchParams({format:"jsonv2",lat:String(point.lat),lon:String(point.lng),zoom:"10",addressdetails:"1",namedetails:"1",...(language?{"accept-language":language}:{})});console.log("Nominatim 请求",url.href);const response=await fetch(url,{headers:{Accept:"application/json"},signal:nominatimController.signal});if(!response.ok)throw Error(`地名查询 HTTP ${response.status}`);const data=await response.json();console.log("Nominatim 结果",url.href,data);return data}
+ function placeName(place){const address=place?.address||{};return place?.name||address.city||address.town||address.village||address.municipality||address.county||address.state||address.region||place?.display_name?.split(",")[0]||""}
+ function bilingualName(zh,original){const chinese=(zh||"").trim();const local=(original||"").trim();return chinese&&local&&chinese!==local?chinese+" ("+local+")":chinese||local||"未知地点"}
  function preferenceName(value){
   return value==="history"?"人文历史":value==="nature"?"自然秘境":"全都要"
  }
@@ -345,7 +347,10 @@
   const score=Number(value.totalScore);
   if(!Number.isFinite(score)||score<1||score>10)throw new Error("Invalid score");
   return {
-   destination:required(value.destination),tags,
+   destination:required(value.destination),
+   destination_zh:typeof value.destination_zh==="string"?value.destination_zh.trim():"",
+   destination_en:typeof value.destination_en==="string"?value.destination_en.trim():"",
+   tags,
    preferenceMatch:{level:match.level,reason:required(match.reason)},
    alternativeSpots:alternatives,
    recommendedPlay:typeof value.recommendedPlay==="string"?value.recommendedPlay.trim():"",
@@ -390,7 +395,7 @@
    const response=await fetch("/api/deepseek",{
     method:"POST",
     headers:{"Content-Type":"application/json","Accept":"application/json"},
-    body:JSON.stringify({location:landing.name,address:landing.address,preference:preferenceName(preference),currentMonth:currentMonthInUK()}),
+    body:JSON.stringify({location:landing.originalName||landing.zhName||"未知地点",locationZh:landing.zhName,address:landing.address,preference:preferenceName(preference),currentMonth:currentMonthInUK()}),
     signal:controller.signal
    });
    let data;
@@ -398,7 +403,8 @@
    if(token!==round||requestId!==analysisRequestId)return;
    if(!response.ok)throw new Error(data.error||"HTTP "+response.status);
    const report=parseTravelReport(data.report);
-   renderTripReport(report)
+   renderTripReport(report);
+   destination.textContent=bilingualName(report.destination_zh||landing.zhName,landing.originalName||report.destination_en)
   }catch(error){
    if(token!==round||requestId!==analysisRequestId)return;
    aiAnalysis.hidden=false;
@@ -433,9 +439,19 @@
    return
   }
   const address=place.address;
-  destination.textContent=address.city||address.town||address.village||address.municipality||address.county||address.state||address.region||place.name||place.display_name?.split(",")[0]||"未知地点";
+  const originalName=place.namedetails?.name||placeName(place);
   addressEl.textContent=place.display_name||Object.values(address).filter(Boolean).join(", ")||"未能获取完整地址";
-  currentLanding={point,name:destination.textContent,address:addressEl.textContent};
+  let zhName="";
+  try{
+   const chinesePlace=await requestNominatim(point,token,"zh-CN");
+   if(token!==round)return;
+   zhName=chinesePlace?.namedetails?.["name:zh-CN"]||chinesePlace?.namedetails?.["name:zh"]||placeName(chinesePlace);
+  }catch(error){
+   if(token!==round)return;
+   console.log("Nominatim 中文地名查询失败",error)
+  }
+  destination.textContent=bilingualName(zhName,originalName);
+  currentLanding={point,originalName,zhName,address:addressEl.textContent};
   await requestTripReport(currentLanding,currentPreference,token)
  }
  function restoreCard(){
