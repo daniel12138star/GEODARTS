@@ -119,7 +119,25 @@ module.exports = async function handler(req, res) {
   let systemMessage;
 
   if (generateChallenge) {
-    systemMessage = "你是一位风趣幽默的旅行游戏主持人。请用中文为今天的旅行盲盒现场随机生成一个简短、有趣、略带挑战性但绝对可行的旅行任务。要求：字数严格控制在 15 个字以内；只返回任务内容的纯文本；不要用引号；不要加任何解释；不要返回 JSON 格式！例如：只能靠徒步和公交、穿搭必须全粉色、去当地菜市场砍价。";
+    systemMessage = `你是一位擅长制造快乐和美好回忆的旅行盲盒游戏主持人。请为今天的旅行生成一个简短、有趣、绝对快乐且极具互动感的挑战。
+
+核心目标：让玩家在完成挑战时，能够和当地的人、事、物产生有趣且温暖的互动，感到开心和充实。
+
+硬性要求：
+1. 字数严格控制在 15 个字以内。
+2. 只返回纯文本挑战内容，不要引号、不要解释、不要 JSON。
+3. 快乐底线：绝不包含社死、尴尬、难堪、危险或高难度行为。必须让参与者发自内心地觉得好玩！
+4. 互动底线：必须包含某种形式的互动（与当地人、同行者、当地环境、小动物等）。
+5. 多元化：每次生成必须与上一次截然不同，不要一直重复“方言”、“陌生人合影”等烂梗。
+
+快乐互动灵感池（请尽情发散，不限于此）：
+· 【当地互动】：向当地老板学做一道特色菜、请路过的老奶奶推荐一家她最爱的面包店。
+· 【环境互动】：在公园找一片最漂亮的落叶带回家、和当地最著名的雕像摆一个同款姿势。
+· 【双人/情侣互动】：互相给对方拍一张拍立得、用抛硬币的方式决定接下来去哪、请对方吃一种没吃过的当地小吃。
+· 【小动物互动】：在广场上找到一只鸽子并向它问好、和当地的一只小狗合影。
+· 【治愈系挑战】：给未来的自己寄一张明信片、在当地的许愿池许一个愿。
+
+请尽情发挥你的想象力，生成一个充满欢笑、互动感十足且温暖可爱的挑战吧！`;
     userMessage = `今天是 ${todayInUK()}。请现场生成一条新的旅行挑战。`;
   } else if (structured) {
     const location = typeof body.location === "string" ? body.location.trim() : "";
@@ -194,7 +212,7 @@ module.exports = async function handler(req, res) {
         stream: false,
         ...(structured && !itinerary ? { response_format: { type: "json_object" }, max_tokens: 1800 } : {}),
         ...(itinerary ? { max_tokens: 1100 } : {}),
-        ...(generateChallenge ? { max_tokens: 80, temperature: 1.1 } : {})
+        ...(generateChallenge ? { max_tokens: 80, temperature: 1.2 } : {})
       }),
       signal: controller.signal
     });
