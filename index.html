@@ -19,7 +19,7 @@
 .preference-button{flex:none;padding:9px 12px;border:1px solid #ffdce8;border-radius:999px;background:#fffaf5ed;box-shadow:0 5px 14px #9d59752b;color:#9b536e;font:700 13px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;white-space:nowrap;cursor:pointer;transition:transform .18s,background .18s,box-shadow .18s}
 .preference-button:hover{transform:translateY(-2px)}
 .preference-button[aria-pressed="true"]{border-color:#f18baa;background:#ffcadb;box-shadow:0 4px 0 #d989a4,0 7px 16px #9d597533;color:#713d54}
-.challenge-control{position:absolute;z-index:101;left:50%;bottom:calc(188px + env(safe-area-inset-bottom));transform:translateX(-50%);display:grid;justify-items:center;gap:5px;width:max-content;max-width:calc(100% - 20px)}.challenge-button{padding:8px 15px;border:1px solid #ffdce8;border-radius:999px;background:#fffaf5ed;box-shadow:0 5px 14px #9d59752b;color:#9b536e;font:750 13px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;cursor:pointer}.challenge-button:disabled{opacity:.65;cursor:default}.challenge-label{max-width:100%;padding:4px 10px;border-radius:999px;background:#ffe8f0ed;color:#874c68;font-size:11px;font-weight:750;text-align:center;box-shadow:0 3px 9px #9d597522}.challenge-feedback[hidden]{display:none}.challenge-feedback{margin:12px 0;padding:12px;border:1px solid #f1d7e2;border-radius:16px;background:#fff3f7;color:#69465a;font-size:13px;line-height:1.6}.challenge-feedback strong{display:block;margin-bottom:4px;color:#a24b72}.challenge-feedback #challenge-status{display:block;font-weight:750}
+.couple-mode-control{position:absolute;z-index:101;left:50%;bottom:calc(188px + env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:calc(100% - 20px)}.couple-mode-button{padding:8px 15px;border:1px solid #ffdce8;border-radius:999px;background:#ffcadbed;box-shadow:0 5px 14px #9d59752b;color:#9b536e;font:750 13px "ZCOOL KuaiLe","Microsoft YaHei",sans-serif;cursor:pointer}.couple-mode-button[aria-pressed="false"]{background:#fffaf5ed}.couple-mode-button:disabled{opacity:.65;cursor:default}.couple-challenge[hidden]{display:none}.couple-challenge{margin:12px 0;padding:12px;border:1px solid #f1d7e2;border-radius:16px;background:#fff3f7;color:#69465a;font-size:13px;line-height:1.6}.couple-challenge strong{display:block;margin-bottom:4px;color:#a24b72}.couple-challenge #couple-challenge-title{display:block;font-weight:750}
 .result-card{bottom:calc(182px + env(safe-area-inset-bottom));max-height:min(62vh,740px)}
 .trip-report[hidden],.ai-analysis[hidden],.hidden-play[hidden]{display:none}
 .trip-report{display:grid;gap:11px;margin-top:12px}
@@ -85,7 +85,7 @@
 }
 @media(max-width:600px){.topbar{top:12px;left:12px;max-width:calc(100% - 24px);padding:9px 13px 9px 10px}.brand{font-size:clamp(16px,4.3vw,21px)}.tagline{font-size:11px}.throw-button{min-width:220px;min-height:68px;font-size:21px}.result-card{right:10px;bottom:calc(120px + env(safe-area-inset-bottom));width:calc(100% - 20px);max-height:48vh}.status{top:78px}}
 @media(max-width:600px){.preference-bar{bottom:calc(120px + env(safe-area-inset-bottom));gap:5px}.preference-button{padding:7px 8px;font-size:11px}.result-card{bottom:calc(168px + env(safe-area-inset-bottom));max-height:44vh}}
-@media(max-width:600px){.challenge-control{bottom:calc(164px + env(safe-area-inset-bottom))}.challenge-button{padding:6px 11px;font-size:11px}.challenge-label{font-size:10px}}
+@media(max-width:600px){.couple-mode-control{bottom:calc(164px + env(safe-area-inset-bottom))}.couple-mode-button{padding:6px 11px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -97,7 +97,7 @@
 <button id="passport-button" class="passport-button" type="button">📖 我的旅行护照</button>
 <div id="passport-modal" class="passport-modal" role="dialog" aria-modal="true" aria-labelledby="passport-title" hidden><div class="passport-panel"><div class="passport-heading"><h2 id="passport-title">我的旅行护照</h2><button id="passport-close" class="passport-close" type="button" aria-label="关闭护照">×</button></div><p id="passport-summary" class="passport-summary"></p><div id="stamp-grid" class="stamp-grid"></div><button id="passport-clear" class="passport-clear" type="button">清空护照</button></div></div>
 <div id="preference-bar" class="preference-bar" role="group" aria-label="旅行偏好"><button class="preference-button" type="button" data-preference="history" aria-pressed="false">🏛️ 人文历史</button><button class="preference-button" type="button" data-preference="nature" aria-pressed="false">🌲 自然秘境</button><button class="preference-button" type="button" data-preference="all" aria-pressed="true">🎲 我全都要</button></div>
-<div class="challenge-control"><button id="challenge-button" class="challenge-button" type="button">🎲 抽取今日挑战</button><span id="challenge-label" class="challenge-label" aria-live="polite">无挑战,自由飞</span></div>
+<div class="couple-mode-control"><button id="couple-mode-button" class="couple-mode-button" type="button" aria-pressed="true">💕 情侣模式: 已开启</button></div>
 <button id="throw-button" class="throw-button" type="button"><span class="throw-icon" aria-hidden="true">🎯</span><span>扔飞镖</span></button>
 <div id="status" class="status" role="status" aria-live="polite" hidden></div>
 <section id="result-card" class="result-card" aria-live="polite" hidden><div class="card-heading"><span>飞镖命中的地方</span><button id="close-card" class="close-button" type="button" aria-label="关闭结果">×</button></div><h2 id="destination" class="destination">-</h2><figure class="postcard"><div class="postcard-placeholder">这里太神秘了,暂无照片</div><img id="postcard-image" class="postcard-image" alt="目的地风景" loading="lazy" decoding="async"></figure><div class="detail-label">完整地址</div><p id="address" class="result-address">正在获取地址...</p><div class="detail-label">经纬度</div><p id="coordinates" class="coordinates">-</p><div class="detail-label ai-label">AI 周边灵感</div><div id="ai-analysis" class="ai-analysis" aria-live="polite">等待飞镖落点...</div><div id="trip-report" class="trip-report" hidden><span id="style-tag" class="report-pill"></span><p id="match-stars" class="report-line"></p><p id="match-reason" class="report-line"></p><div class="report-block"><p class="report-line"><strong>推荐玩法</strong></p><p id="recommended-play" class="report-line"></p><p id="hidden-play" class="report-line hidden-play" hidden></p></div><div class="report-block"><p class="report-line"><strong>详细账单</strong></p><div class="bill-grid"><span id="bill-transport" class="bill-item"></span><span id="bill-lodging" class="bill-item"></span><span id="bill-food" class="bill-item"></span><span id="bill-total" class="bill-item bill-total"></span></div><p class="bill-note">从英国出发的 3-7 天行程,英镑粗估.含往返及当地交通,请以实际报价为准.</p></div><div class="report-block"><p class="report-line"><strong>季节适宜度</strong></p><p id="season-tip" class="report-line"></p></div><div class="report-block"><p class="report-line"><strong>最终旅行指数</strong></p><p id="travel-score" class="travel-score"></p><p id="romantic-comment" class="report-line"></p></div></div><button id="rethink-button" class="rethink-button" type="button" disabled>🔄 换个偏好试试</button></section>
@@ -182,15 +182,15 @@
  const button=document.getElementById("throw-button"),card=document.getElementById("result-card"),status=document.getElementById("status"),preferenceBar=document.getElementById("preference-bar");
  card.insertAdjacentHTML("beforeend",'<button id="itinerary-button" class="itinerary-button" type="button" disabled>🗺️ 帮我规划 3 天行程</button><section id="itinerary-panel" class="itinerary-panel" hidden><h3>专属 3 天行程</h3><p id="itinerary-content" class="itinerary-content"></p></section>');
  card.querySelector(".bill-note").insertAdjacentHTML("afterend",'<div class="flight-info"><p class="flight-info-title">✈️ 航班价格预估(伯明翰出发)</p><p id="flight-status" class="flight-status">AI 正在估算航班价格...</p><small class="flight-note">AI 经验估算,并非实时票价或可订航班</small></div>');
- card.querySelector("#trip-report").insertAdjacentHTML("beforeend",'<div id="challenge-feedback" class="challenge-feedback" hidden><strong>🎯 挑战评估</strong><span id="challenge-status"></span><span id="challenge-comment"></span></div>');
+ card.querySelector("#trip-report").insertAdjacentHTML("beforeend",'<div id="couple-challenge" class="couple-challenge" hidden><strong>💕 情侣专属挑战</strong><span id="couple-challenge-title"></span><span id="couple-challenge-reason"></span></div>');
  const destinationRow=document.createElement("div"),destinationHeading=card.querySelector("#destination");
  let weatherBadge=document.createElement("span");
  destinationRow.className="destination-row";weatherBadge.id="weather-badge";weatherBadge.className="weather-badge";weatherBadge.hidden=true;
  destinationHeading.before(destinationRow);destinationRow.append(destinationHeading,weatherBadge);
  const cardTemplate=card.innerHTML,stage=document.getElementById("fps-stage"),stageTemplate=stage.innerHTML;
  let destination=document.getElementById("destination"),addressEl=document.getElementById("address"),coordinatesEl=document.getElementById("coordinates"),aiAnalysis=document.getElementById("ai-analysis"),tripReport=document.getElementById("trip-report"),rethinkButton=document.getElementById("rethink-button");
- const challengeButton=document.getElementById("challenge-button"),challengeLabel=document.getElementById("challenge-label");
- let currentPreference="all",currentChallenge="",currentLanding=null,analysisController=null,analysisRequestId=0,isGeneratingChallenge=false;
+ const coupleModeButton=document.getElementById("couple-mode-button");
+ let currentPreference="all",currentTravelType="couple",currentLanding=null,analysisController=null,analysisRequestId=0;
  const weatherLayer=document.getElementById("weather-layer");
  let weatherController=null;
  let itineraryButton=document.getElementById("itinerary-button"),itineraryPanel=document.getElementById("itinerary-panel"),itineraryContent=document.getElementById("itinerary-content"),itineraryController=null,itineraryRequestId=0;
@@ -525,7 +525,7 @@
    destination_zh:typeof value.destination_zh==="string"?value.destination_zh.trim():"",
    destination_en:typeof value.destination_en==="string"?value.destination_en.trim():"",
    flightEstimate:value.flightEstimate&&typeof value.flightEstimate==="object"&&!Array.isArray(value.flightEstimate)?value.flightEstimate:{},
-   challengeFeedback:value.challengeFeedback&&typeof value.challengeFeedback==="object"&&!Array.isArray(value.challengeFeedback)&&["轻松完成","略有难度","极其困难","几乎不可能"].includes(value.challengeFeedback.status)&&typeof value.challengeFeedback.comment==="string"?value.challengeFeedback:null,
+   coupleChallenge:value.coupleChallenge&&typeof value.coupleChallenge==="object"&&!Array.isArray(value.coupleChallenge)&&typeof value.coupleChallenge.title==="string"&&typeof value.coupleChallenge.reason==="string"?value.coupleChallenge:null,
    tags,
    preferenceMatch:{level:match.level,reason:required(match.reason)},
    alternativeSpots:alternatives,
@@ -551,11 +551,11 @@
   card.querySelector("#season-tip").textContent=report.seasonalBonus.season+" · "+report.seasonalBonus.bonus+" - "+report.seasonalBonus.reason;
   card.querySelector("#travel-score").textContent=report.totalScore.toFixed(1)+" / 10";
   card.querySelector("#romantic-comment").textContent=report.summary;
-  const challengeBox=card.querySelector("#challenge-feedback");
-  challengeBox.hidden=!currentLanding?.challenge||!report.challengeFeedback;
-  if(!challengeBox.hidden){
-   card.querySelector("#challenge-status").textContent="挑战完成度: "+report.challengeFeedback.status;
-   card.querySelector("#challenge-comment").textContent=report.challengeFeedback.comment
+  const coupleBox=card.querySelector("#couple-challenge");
+  coupleBox.hidden=currentLanding?.travelType!=="couple"||!report.coupleChallenge;
+  if(!coupleBox.hidden){
+   card.querySelector("#couple-challenge-title").textContent=report.coupleChallenge.title;
+   card.querySelector("#couple-challenge-reason").textContent=report.coupleChallenge.reason
   }
   tripReport.hidden=false;
   aiAnalysis.hidden=true
@@ -617,7 +617,7 @@
    const response=await fetch("/api/deepseek",{
     method:"POST",
     headers:{"Content-Type":"application/json","Accept":"application/json"},
-    body:JSON.stringify({location:landing.originalName||landing.zhName||"未知地点",locationZh:landing.zhName,address:landing.address,countryCode:landing.countryCode,preference:preferenceName(preference),currentMonth:currentMonthInUK(),challenge:currentChallenge}),
+    body:JSON.stringify({location:landing.originalName||landing.zhName||"未知地点",locationZh:landing.zhName,address:landing.address,countryCode:landing.countryCode,preference:preferenceName(preference),travelType:landing.travelType,currentMonth:currentMonthInUK()}),
     signal:controller.signal
    });
    let data;
@@ -715,7 +715,7 @@
   recordVisitedCountry(countryCode);
   const originalName=place.namedetails?.name||placeName(place);
   addressEl.textContent=place.display_name||Object.values(address).filter(Boolean).join(", ")||"未能获取完整地址";
-  currentLanding={point,originalName,zhName:"",address:addressEl.textContent,countryCode,challenge:currentChallenge,photoTitles:new Set(),aiPhotoChecked:false,preferredPhotoSelected:false,preferredPhotoShown:false};
+  currentLanding={point,originalName,zhName:"",address:addressEl.textContent,countryCode,travelType:currentTravelType,photoTitles:new Set(),aiPhotoChecked:false,preferredPhotoSelected:false,preferredPhotoShown:false};
   loadPostcard(currentLanding,originalName,token);
   let zhName="";
   try{
@@ -782,9 +782,6 @@
  }
  async function resetRound(){
   round++;
-  currentChallenge="";
-  challengeLabel.textContent="无挑战,自由飞";
-  challengeButton.textContent="🎲 抽取今日挑战";
   clearWeather();
   resetItinerary();
   if(nominatimController)nominatimController.abort();
@@ -813,10 +810,10 @@
   await pause(500)
  }
  async function handleButtonClick(){
-  if(isAnimating||isGeneratingChallenge)return;
+  if(isAnimating)return;
   isAnimating=true;
   button.disabled=true;
-  challengeButton.disabled=true;
+  coupleModeButton.disabled=true;
   try{
    if(readyToReset)await resetRound();
    else await throwDart()
@@ -826,40 +823,15 @@
   }finally{
    isAnimating=false;
    button.disabled=false;
-   challengeButton.disabled=readyToReset;
+   coupleModeButton.disabled=readyToReset;
    button.querySelector("span:last-child").textContent=readyToReset?"再扔一次":"扔飞镖"
   }
  }
- challengeButton.addEventListener("click",async()=>{
-  if(isAnimating||readyToReset||isGeneratingChallenge)return;
-  isGeneratingChallenge=true;
-  challengeButton.disabled=true;
-  button.disabled=true;
-  challengeButton.textContent="🧠 AI 正在构思挑战...";
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),20000);
-  try{
-   const response=await fetch("/api/deepseek",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({requestType:"generate_challenge"}),
-    signal:controller.signal
-   });
-   const data=await response.json();
-   if(!response.ok||typeof data.challenge!=="string"||!data.challenge.trim())throw new Error(data.error||"生成失败");
-   currentChallenge=data.challenge.trim();
-   challengeLabel.textContent="今日挑战: "+currentChallenge;
-   challengeButton.textContent="🎲 换一个挑战"
-  }catch(error){
-   console.log("AI 挑战生成失败",error);
-   setStatus("AI 开小差了，请再点一次",true,4000);
-   challengeButton.textContent=currentChallenge?"🎲 换一个挑战":"🎲 抽取今日挑战"
-  }finally{
-   clearTimeout(timeout);
-   isGeneratingChallenge=false;
-   challengeButton.disabled=readyToReset||isAnimating;
-   button.disabled=isAnimating
-  }
+ coupleModeButton.addEventListener("click",()=>{
+  if(isAnimating||readyToReset)return;
+  currentTravelType=currentTravelType==="couple"?"solo":"couple";
+  coupleModeButton.setAttribute("aria-pressed",String(currentTravelType==="couple"));
+  coupleModeButton.textContent=currentTravelType==="couple"?"💕 情侣模式: 已开启":"💕 情侣模式: 已关闭"
  });
  let bordersPromise=null;function waitForBorders(){if(!bordersPromise)bordersPromise=loadBorders().catch(error=>{console.error(error);bordersReady=false;bordersPromise=null;clearStatus();return false});return bordersPromise}
  button.addEventListener("click",handleButtonClick);
