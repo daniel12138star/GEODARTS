@@ -1,0 +1,14 @@
+{
+  "name": "geodarts",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.0.0",
+    "google-flights-mcp": "^1.0.3",
+    "mcp-handler": "^2.1.0",
+    "zod": "^4.4.3"
+  }
+}
